@@ -9,7 +9,7 @@ namespace PPEIMS.Models
 {
     public enum Domain
     {
-       SEMIRARAMINING, SMCDACON
+        SEMCALACA, SMCDACON, SEMIRARAMINING
     }
 
 

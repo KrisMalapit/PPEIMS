@@ -7,7 +7,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DNTBreadCrumb.Core;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -52,14 +51,13 @@ namespace PPEIMS.Controllers
             {
                 status = "success";
 
-                //if (domain == "SEMCALACA")
-                //{
-                //    domainName = "semcalaca";
-                //    ctx = new PrincipalContext(ContextType.Domain, domainName, "OU=SLPGC PLANT SITE,dc=semcalaca,dc=com", @"semcalaca\qmaster", "M@st3rQ###");
-                //    ctx2 = new PrincipalContext(ContextType.Domain, domainName, "OU=SCPC PLANT SITE,dc=semcalaca,dc=com", @"semcalaca\qmaster", "M@st3rQ###");
-                //}
-                //else 
-                if (domain == "SEMIRARAMINING")
+                if (domain == "SEMCALACA")
+                {
+                    domainName = "semcalaca";
+                    ctx = new PrincipalContext(ContextType.Domain, domainName, "OU=SLPGC PLANT SITE,dc=semcalaca,dc=com", @"semcalaca\qmaster", "M@st3rQ###");
+                    ctx2 = new PrincipalContext(ContextType.Domain, domainName, "OU=SCPC PLANT SITE,dc=semcalaca,dc=com", @"semcalaca\qmaster", "M@st3rQ###");
+                }
+                else if (domain == "SEMIRARAMINING")
                 {
                     domainName = "SEMIRARAMINING";
                     domain = "SEMIRARAMINING";
@@ -237,7 +235,6 @@ namespace PPEIMS.Controllers
                         user.Name = Name;
                         user.Status = "1";
                         user.RoleId = 2;
-                        user.CompanyAccess = "1";
                         user.UserType = UserType;
                         _context.Users.Add(user);
                         _context.SaveChanges();
@@ -292,8 +289,6 @@ namespace PPEIMS.Controllers
             ViewData["Department"] = new SelectList(_context.Departments.Where(a => a.Status == "Active").Where(a => a.CompanyId == user.Departments.CompanyId), "ID", "Name", user.DepartmentId);
             ViewData["Company"] = new SelectList(_context.Companies.Where(a => a.Status == "Active"), "ID", "Name", user.Departments.CompanyId);
             ViewData["Roles"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
-
-            
 
 
             return View(user);
