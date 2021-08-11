@@ -1,0 +1,93 @@
+﻿
+
+@using PPEIMS.Models.View_Model;
+
+@model LoginViewModel
+@{
+    ViewBag.Title = "LogIn";
+}
+
+@{Layout = null;}
+
+<link href="~/css/bootstrap.min.css" rel="stylesheet">
+<link href="~/font-awesome/css/font-awesome.css" rel="stylesheet">
+<link href="~/css/animate.css" rel="stylesheet">
+<link href="~/css/style.css" rel="stylesheet">
+<body class="gray-bg">
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+                <h3 class="logo-name" style="font-size:180px!important">FO</h3>
+            </div>
+
+            <p> <h3>Personal Protective Equipment Issuance Monitoring System</h3></p>
+
+            <p>Please Log-In</p>
+            <div>
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li><a class="nav-link active" data-toggle="tab" href="#tab-1"> Active Directory </a></li>
+                        <li><a class="nav-link" data-toggle="tab" href="#tab-2">Local Log-In</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+
+                                @using (Html.BeginForm("Login", "Accounts", FormMethod.Post, new { @class = "form-horizontal", role = "form"}))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" });
+                                    <input type="hidden" name="LogInType" value="AD"/>
+                                    <div class="form-group">
+                                        @Html.DropDownList("Domain",
+                                                    new SelectList(Enum.GetValues(typeof(PPEIMS.Models.Domain)), "SMCDACON"), new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="Username" placeholder="Username" required="">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" class="form-control" name="Password" placeholder="Password" required="">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+
+
+                                }
+                            </div>
+                        </div>
+                        <div role="tabpanel" id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+                                @using (Html.BeginForm("Login", "Accounts", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" });
+                                    <input type="hidden" name="LogInType" value="LOCAL" />
+                                    <div class="form-group">
+                                        @Html.DropDownList("Domain",
+                                                    new SelectList(Enum.GetValues(typeof(PPEIMS.Models.Domain)), "SEMIRARAMINING"), new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="Username" placeholder="Username" required="">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+
+    <script src="~/js/jquery-2.1.1.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+
+</body>
+
+
