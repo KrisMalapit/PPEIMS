@@ -18,10 +18,9 @@ namespace PPEIMS.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<Department> Departments { get; set; }
-
         public DbSet<NoSeries> NoSeries { get; set; }
-
         public DbSet<Item> Items { get; set; }
+        public DbSet<ItemDetail> ItemDetails { get; set; }
         
 
 

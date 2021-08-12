@@ -132,7 +132,7 @@ namespace PPEIMS.Controllers
                   a.No,
                   a.Description,
                   a.Description2,
-                  Inventory = a.Quantity,
+                  Inventory = 0,
                   //a.DescriptionLiquidation,
                   //a.TypeFuel,
                   a.Id
@@ -167,6 +167,30 @@ namespace PPEIMS.Controllers
             {
                 return Json(ex);
             }
+        }
+        public IActionResult getDataDetails(int itemid)
+        {
+            string status = "";
+            var v =
+                _context.ItemDetails.Where(a => a.Status != "Deleted")
+                .Where(a => a.ItemId == itemid)
+                .Select(a => new
+                {
+                     a.Id
+                    ,a.CreatedDate
+                    ,a.LineNo
+                    ,a.Quantity
+                    ,a.Remarks
+                });
+            status = "success";
+
+            var model = new
+            {
+                status
+                ,
+                data = v.ToList()
+            };
+            return Json(model);
         }
     }
     
