@@ -65,11 +65,12 @@
                     @Html.DropDownList("RoleId", (IEnumerable<SelectListItem>)ViewData["Roles"], "Select Role", new { @class = "form-control" })
                     <span asp-validation-for="RoleId" class="text-danger"></span>
                 </div>
-                <div class="form-group" hidden>
-                    <label class="control-label">User Type</label>
-                    <select id="UserType" name="UserType" class="form-control">
-                        <option value="PPEIMS">PPEIMS</option>
-                        <option value="TRADING">TRADING</option>
+
+                <div class="form-group">
+                    <label class="control-label">Category</label>
+                    <select id="Category" name="Category" class="form-control">
+                        <option value="OFFICE">OFFICE</option>
+                        <option value="FIELD">FIELD</option>
                     </select>
                 </div>
 
@@ -106,7 +107,7 @@
     $(function () {
         @*console.log(@Model.UserType);*@
         $("#UserType").val('@Model.UserType');
-
+        $("#Category").val('@Model.Category');
     });
 
     $("#frm").submit(function (e) {

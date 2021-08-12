@@ -38,8 +38,7 @@ namespace PPEIMS.Models
         public int DepartmentId { get; set; }
         public virtual Department Departments { get; set; }
 
-        public string LubeAccess { get; set; }
-        public string DispenserAccess { get; set; }
-
+        public string Category { get; set; } // Office-Field
+      
     }
 }

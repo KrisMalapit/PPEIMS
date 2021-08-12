@@ -208,6 +208,7 @@ namespace PPEIMS.Controllers
                         user.Status = "1";
                         user.RoleId = 2;
                         user.UserType = UserType;
+                        user.Category = "OFFICE";
                         _context.Users.Add(user);
                         _context.SaveChanges();
                         status = "success";
@@ -236,6 +237,7 @@ namespace PPEIMS.Controllers
                         user.Status = "1";
                         user.RoleId = 2;
                         user.UserType = UserType;
+                        user.Category = "OFFICE";
                         _context.Users.Add(user);
                         _context.SaveChanges();
 
@@ -318,6 +320,7 @@ namespace PPEIMS.Controllers
                 user.RoleId = u.RoleId;
                 user.DepartmentId = u.DepartmentId;
                 user.UserType = u.UserType;
+                user.Category = u.Category;
                 _context.Entry(user).State = EntityState.Modified;
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));

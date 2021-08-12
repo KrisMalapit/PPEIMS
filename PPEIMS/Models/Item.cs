@@ -17,7 +17,8 @@ namespace PPEIMS.Models
         [Display(Name = "Description 2")]
        
         public string Description2 { get; set; }
-       
+
+        public string PPE { get; set; }
 
         public string Status { get; set; } = "Active";
     }

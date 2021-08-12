@@ -74,7 +74,7 @@ namespace PPEIMS.Controllers
                 int recordsTotal = 0;
 
 
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     string colval = Request.Form["columns[" + i + "][search][value]"];
                     if (colval != "")
@@ -136,6 +136,7 @@ namespace PPEIMS.Controllers
                   //a.DescriptionLiquidation,
                   //a.TypeFuel,
                   a.Id
+                  ,a.PPE
 
 
 
