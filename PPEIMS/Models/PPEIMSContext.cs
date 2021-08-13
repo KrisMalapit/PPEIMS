@@ -21,9 +21,9 @@ namespace PPEIMS.Models
         public DbSet<NoSeries> NoSeries { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemDetail> ItemDetails { get; set; }
-        
+        public DbSet<Request> Requests { get; set; }
 
-
+        public DbSet<RequestDetail> RequestDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

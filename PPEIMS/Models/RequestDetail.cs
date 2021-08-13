@@ -17,6 +17,8 @@ namespace PPEIMS.Models
         public int ItemId { get; set; }
         public virtual Item Items { get; set; }
         public int Quantity { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedDate { get; set; }
 
 
     }

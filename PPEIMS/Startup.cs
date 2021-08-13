@@ -35,7 +35,7 @@ namespace PPEIMS
             });
 
             services.AddDbContext<PPEIMSContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("PPEIMSContextTest")
+            options.UseSqlServer(Configuration.GetConnectionString("PPEIMSContextLocal")
             , builder => builder.UseRowNumberForPaging() //add this for Incorrect syntax near 'OFFSET'. Invalid usage of the option NEXT in the FETCH statement
             ));
 

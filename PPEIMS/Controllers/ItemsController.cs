@@ -27,14 +27,14 @@ namespace PPEIMS.Controllers
         }
         
         [HttpPost]
-        public ActionResult SaveItem(int id,string TypeFuel,string DescLiq)
+        public ActionResult SaveItem(int id,string PPE)
         {
             string status = "";
             string message = "";
             try
             {
                 var item = _context.Items.Find(id);
-                
+                item.PPE = PPE;
                 _context.Entry(item).State = EntityState.Modified;
                 _context.SaveChanges();
 
