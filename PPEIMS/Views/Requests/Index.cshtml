@@ -108,6 +108,7 @@
                     </tr>
                 </tfoot>
             </table>
+
         </div>
     </div>
 </div>
@@ -161,6 +162,7 @@
             $('#tbl').DataTable().destroy();
         }
 
+      
         var table = $("#tbl").DataTable({
             "processing": true,
             "serverSide": true,
@@ -172,45 +174,39 @@
                 "datatype": "json"
             },
             "columns": [
-                //{
-                //    data: "fileDate",
-                //    name: "FileDate",
-                //    render: function (data, type, row) {
-                //        return moment(data).format("MM-DD-YYYY");
-                //    }
-                //},
-                { "data": "ppe", "name": "PPE", "autoWidth": true },
-                { "data": "no", "name": "No", "autoWidth": true },
-                { "data": "description", "name": "Description", "autoWidth": true },
-                { "data": "description2", "name": "Description2", "autoWidth": true },
-                { "data": "inventory", "name": "Inventory", "autoWidth": true },
-                //{ "data": "typeFuel", "name": "TypeFuel", "autoWidth": true },
+               {
+                    data: "createdDate",
+                    name: "CreatedDate",
+                    render: function (data, type, row) {
+                        return moment(data).format("MM-DD-YYYY");
+                    }
+                },
+                //{ "data": "createdDate", "name": "CreatedDate", "autoWidth": true },
+                { "data": "referenceNo", "name": "ReferenceNo", "autoWidth": true },
+                { "data": "createdBy", "name": "CreatedBy", "autoWidth": true },
+                { "data": "documentStatus", "name": "DocumentStatus", "autoWidth": true },
+                
+                
                 {
-                    //data-no=' + row.no + ' data - desc=' + row.description + ' data - desc2=' + row.description2 + ' data - descliq=' + row.descriptionLiquidation + ' data - type=' + row.typeFuel +
+                   
                     render: function (data, type, row) {
 
-                        $desc = (row.description == "") ? null : row.description;
-                        $desc2 = (row.description2 == "") ? null : row.description2;
-                        //$descliq = (row.descriptionLiquidation == "") ? null : row.descriptionLiquidation;
-                        //$type = (row.typeFuel == "") ? null : row.typeFuel;
+                        //$desc = (row.description == "") ? null : row.description;
+                        //$desc2 = (row.description2 == "") ? null : row.description2;
+                        //$actions =
+                        //    "<a title='Edit' data-id=" + row.id + " data-ppe='" + row.ppe + "' data-no=" + row.no + " data-desc='" + $desc + "' data-desc2='" + $desc2 + "' onclick='showmodal(this);'>Edit</a>";
 
-
-                        $actions =
-                            "<a title='Edit' data-id=" + row.id + " data-ppe='" + row.ppe + "' data-no=" + row.no + " data-desc='" + $desc + "' data-desc2='" + $desc2 + "' onclick='showmodal(this);'>Edit</a>";
-
-                        return $actions;
+                        return "";
                     }
                 }
 
 
             ]
-            //,
-            //"columnDefs": [{ "orderable": false, "targets": [1, 2, 3] }]
+           
             , "order": [[1, "asc"]]
 
 
         });
-
 
 
 
