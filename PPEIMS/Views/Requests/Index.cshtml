@@ -2,6 +2,9 @@
     ViewData["Title"] = "Index";
 }
 <style>
+    .error-input {
+        border-color: hsl(0, 76%, 50%) !important;
+    }
     .modal-md {
         width: 60% !important
     }
@@ -11,6 +14,36 @@
     }
 </style>
 <link href="~/css/plugins/select2/select2-bootstrap.min.css" rel="stylesheet">
+
+
+<div class="modal inmodal in " id="modalEmployee" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalSnapTitle">Employee Information </h4>
+                <small class="font-bold">Assigned employees</small>
+            </div>
+            <div class="modal-body">
+                <input id="SubDetailId" />
+
+                <div class="form-group ">
+                    <label>Employee</label>
+                    <select class="form-control" id="EmployeeId" name="EmployeeId" >
+                        <option>Select Employee</option>
+                    </select>
+                </div>
+                <button id="btnSubDetailId" onclick="showmodal(this);" data-id="" class="btn btn-default">Close</button>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
 <div class="modal inmodal in " id="modalItem" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content animated fadeIn">
@@ -20,8 +53,8 @@
             </div>
             <div class="modal-body">
                 <form id="frmItem">
-                    @* <input id="FuelOilDetailId" name="FuelOilId" value="@ViewBag.Id" type="hidden" />*@
-                    <input id="SubDetailId" name="Id" type="hidden" />
+                  
+                    <input id="DetailId" name="Id" value="0"  />
                     <div class="form-group">
                         <script id="ITEMtemplate" type="text/template">
                             <td>
@@ -29,7 +62,9 @@
                                     <option>Select Item</option>
                                 </select>
                             </td>
-                            <td><input class=" form-control" type="text" placeholder="Volume / Qty" name="volume[]" required /></td>
+                            <td>
+                                <input class=" form-control" type="text" placeholder="Qty" name="qty[]" required />
+                            </td>
                             <td>
                                 <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>
                             </td>
@@ -38,8 +73,8 @@
                             <thead>
                                 <tr>
                                     <th width="5%">#</th>
-                                    <th width="70%">Item</th>
-                                    <th>Volume / Qty</th>
+                                    <th width="60%">Item</th>
+                                    <th>Qty</th>
                                     <th width="10%">Actions</th>
                                 </tr>
                             </thead>
@@ -52,7 +87,7 @@
                                             <option>Select Item</option>
                                         </select>
                                     </td>
-                                    <td><input class=" form-control" type="text" placeholder="Volume / Qty" name="volume[]" required /></td>
+                                    <td><input class=" form-control" type="text" placeholder="Qty" name="qty[]" required /></td>
                                     <td>
                                         <button class="addFE btn btn-default" type="button"><i class="fa fa-plus"></i> </button>
                                     </td>
@@ -72,6 +107,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
 
@@ -133,6 +171,60 @@
         }
         return false;
     });
+
+    $('#EmployeeId').on('select2:select', function (e) {
+        var data = e.params.data;
+
+        $.ajax({
+            url: "@Url.Action("SaveEmployee")",
+            method: "POST",
+            dataType: "json",
+            data: {
+                'UserId': data['id'],
+                'RequestDetailId': $("#SubDetailId").val(),
+
+            }
+            , success: function (responsedata) {
+                if (responsedata.status == "success") {
+                    toastr["success"]("Data saved!", "<b>Success</b> ")
+                    //loadDatatable();
+                } else {
+                    toastr["error"](responsedata.message)
+                    toastr.options = {
+                        "closeButton": true,
+                        "showDuration": "3000",
+                    }
+                };
+            }
+        });
+    });
+
+    
+    $("#EmployeeId").select2({
+        dropdownParent: $('#modalEmployee .modal-content'),
+        width: '100%',
+        theme: 'bootstrap',
+        minimumInputLength: 1,
+        placeholder: '',
+        closeOnSelect: false,
+        ajax: {
+            url: "@Url.Action("SearchEmployee")",
+            dataType: 'json',
+            delay: 300,
+            data: function (params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page
+                };
+            },
+            processResults: function (data, page) {
+                return {
+                    results: data.items
+                };
+            },
+            cache: false
+        }
+    });
     function initiateSelect2() {
 
         $(".cmbNo").select2({
@@ -161,31 +253,56 @@
         minimumInputLength: 4,
         });
 
-        
+
     }
     function saveItem() {
-        $id = $("#itemId").val();
-        $ppe = $("#itemPPE").val();
+        var cnt = 0;
+
+        $('#frmItem').find('input').each(function () {
+            if ($(this).prop('required')) {
+                if (!$(this).val()) {
+                    cnt = 1;
+                    $(this).addClass("error-input");
+                } else {
+                    $(this).removeClass("error-input");
+                }
+            }
+        });
+
+        if (cnt > 0) {
+            toastr["error"]("Fill all required fields", "Error")
+            toastr.options = {
+                "closeButton": true,
+                "showDuration": "3000",
+            }
+            return false;
+        }
+
+
+
+        var data = $("#frmItem").serializeArray();
 
 
         $.ajax({
-                url: "@Url.Action("SaveItem")"
-                    , method: "POST"
-                    , data: { id: $id, PPE: $ppe }
-                    , dataType: 'json'
-                    , success: function (responsedata) {
-                        if (responsedata.status == "success") {
-                            toastr["success"]("Data saved!", "<b>Success</b> ")
-                            loadDatatable();
-                        } else {
-                            toastr["error"](responsedata.message)
-                            toastr.options = {
-                                "closeButton": true,
-                                "showDuration": "3000",
-                            }
-                        }
+            url: "@Url.Action("saveRequest")"
+            , method: "POST"
+            , data: data
+            , dataType: 'json'
+             , success: function (responsedata) {
+                if (responsedata.status == "success") {
+                    toastr["success"]("Form saved!", "<b>Success</b> ")
+                    $("#DetailId").val(responsedata.refid);
+                    loadDatatable();
+                    reloadtable(responsedata.refid);
+
+                } else {
+                    toastr["error"](responsedata.message)
+                    toastr.options = {
+                        "closeButton": true
                     }
-               })
+                }
+            }
+        })
 
 
     }
@@ -200,9 +317,9 @@
                 $(this).html('<input type="search" class="form-control form-control-sm" placeholder="Search ' + title + '" />');
             }
         });
-
+        initiateSelect2();
         loadDatatable();
-      
+
     })
 
     function loadDatatable() {
@@ -212,7 +329,7 @@
             $('#tbl').DataTable().destroy();
         }
 
-      
+
         var table = $("#tbl").DataTable({
             "processing": true,
             "serverSide": true,
@@ -235,24 +352,23 @@
                 { "data": "referenceNo", "name": "ReferenceNo", "autoWidth": true },
                 { "data": "createdBy", "name": "CreatedBy", "autoWidth": true },
                 { "data": "documentStatus", "name": "DocumentStatus", "autoWidth": true },
-                
-                
+
+
                 {
-                   
+
                     render: function (data, type, row) {
 
-                        //$desc = (row.description == "") ? null : row.description;
-                        //$desc2 = (row.description2 == "") ? null : row.description2;
-                        //$actions =
-                        //    "<a title='Edit' data-id=" + row.id + " data-ppe='" + row.ppe + "' data-no=" + row.no + " data-desc='" + $desc + "' data-desc2='" + $desc2 + "' onclick='showmodal(this);'>Edit</a>";
 
-                        return "";
+                        $actions =
+                            "<a title='Edit' data-id=" + row.id + " onclick='showmodal(this);'>Edit</a>";
+
+                        return $actions;
                     }
                 }
 
 
             ]
-           
+
             , "order": [[1, "asc"]]
 
 
@@ -290,68 +406,134 @@
         };
     })();
     function createRequest() {
+
+        $('#DetailId').val(0);
+
+        if ($('#tblItem tr').length > 2) {
+            $('#p_Item > tr').remove();
+            $trr =
+                '<td><select class="form-control input-sm cmbNo" id=cmbNo name="no[]"><option>Select Item</option></select></td>' +
+                '<td><input class=" form-control" type="text" placeholder="Qty" name="qty[]" required value="0"/></td>'
+
+            $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>'
+
+
+                $trr = $trr + $tdCtr;
+            var $tr = $('<tr>').append('<td> 1 </td>' + $trr);
+            FEDiv.append($tr);
+            initiateSelect2();
+        };
+
+
+
+
+
         $('#modalItem').modal('show');
     }
     function showmodal(obj) {
         $id = $(obj).attr('data-id');
-        $no = $(obj).attr('data-no');
-        $desc = $(obj).attr('data-desc');
-        $ppe = $(obj).attr('data-ppe');
-        $desc2 = $(obj).attr('data-desc2') == "null" ? "" : $(obj).attr('data-desc2');
-        $descliq = $(obj).attr('data-descliq') == "null" ? "" : $(obj).attr('data-descliq');
-        $type = $(obj).attr('data-type') == "null" ? "" : $(obj).attr('data-type');
+        $("#DetailId").val($id);
 
-        console.log(obj);
-        $("#itemId").val($id);
-        $("#itemNo").val($no);
-        $("#itemPPE").val($ppe);
-        $("#itemDescription").val($desc);
-        $("#itemDescription2").val($desc2);
-        $("#itemDescription").val($desc);
-        reloadtable($id);
-
-
-
+        $('#modalEmployee').modal('hide');
         $('#modalItem').modal('show');
-
+        reloadtable($id);
+    }
+    function showmodaldetail(obj) {
+        $id = $(obj).attr('data-id');
+        $('#SubDetailId').val($id);
+        $('#btnSubDetailId').attr('data-id', $("#DetailId").val());
+        $('#modalItem').modal('hide');
+        $('#modalEmployee').modal('show');
 
     }
-
     function reloadtable(_id) {
-        var data = [];
 
-         $.ajax({
-            url: "@Url.Action("getDataDetails")?itemid=" + _id
-                , method: "POST"
-                , dataType: 'json'
-                , success: function (responsedata) {
+        $.ajax({
+            url: "@Url.Action("getDataDetails")"
+            , method: "POST"
+            , dataType: 'json'
+            , data: { id: _id }
+            , async: false
+            , success: function (responsedata) {
 
-                    if (responsedata.status == "success") {
-                        for (var i = 0; i < responsedata.data.length; i++) {
-                            $cdate = moment(responsedata.data[i].createdDate).format("MM-DD-YYYY");
-                            data.push([$cdate, responsedata.data[i].quantity, responsedata.data[i].remarks]);
-
-                        }
-
-                        if ($.fn.DataTable.isDataTable('#tblDetail')) {
-                            $('#tblDetail').DataTable().destroy();
-                        }
-
-                        $('#tblDetail').DataTable({
-                            "data" : data,
-                            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                            "columnDefs": [
-                                { className: "td-actions text-right", targets: 1}
-                            ],
-                        });
+                var $trr = '';
+                $('#p_Item > tr').remove();
+                if (responsedata.data.length > 0) {
 
 
-                    } else {
-                    swal("Error!" + responsedata.message, "Please try again", "error");
+                    for (var i = 0; i < responsedata.data.length; i++) {
+                        $trr =
+                            '<td><select class="form-control input-sm cmbNo" id=cmbNo' + i + ' name="no[]"><option>Select Item</option></select></td>' +
+                            '<td><input class=" form-control" type="text" placeholder="Qty" name="qty[]" required value="' + responsedata.data[i].quantity + '"/></td>'
+
+                        $tdCtr = i == 0 ? '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button>&nbsp; <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button></td>' :
+                            '<td>' +
+
+                            "<button data-id=" + responsedata.data[i].id + " onclick='showmodaldetail(this);' class='detITEM btn btn-primary' type='button'><i class='glyphicon glyphicon-th-list'></i></button>&nbsp;" +
+                            '<button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>' +
+                            '</td>'
+
+                        $trr = $trr + $tdCtr;
+                        var $tr = $('<tr>').append('<td>' + (i + 1) + '</td>' + $trr);
+                        FEDiv.append($tr);
+
+                        //Item
+                        $('#cmbNo' + i).append(new Option("", ""));
+                        $('#cmbNo' + i).append(new Option(responsedata.data[i].itemName, responsedata.data[i].itemId));
+                        $('#cmbNo' + i).select2({
+                            dropdownParent: $('#modalItem .modal-content'),
+                            width: '100%',
+                            theme: 'bootstrap',
+                            ajax: {
+                                url: "@Url.Action("SearchItem")",
+                                dataType: 'json',
+                                delay: 2000,
+                                data: function (params) {
+                                    return {
+                                        q: params.term, // search term
+                                        page: params.page
+                                    };
+                                },
+                                processResults: function (data, page) {
+                                    return {
+                                        results: data.items,
+
+                                    };
+                                },
+
+                                cache: false
+                            },
+
+                            minimumInputLength: 4,
+
+                        }).val(responsedata.data[i].itemId).trigger('change');
+
+
+
                     }
+                } else {
+
+                    var i = $('#p_Item tr').length + 1;
+
+                    var x =
+                        '<td>' +
+                        '<select class="form-control input-sm cmbNo" name="no[]"><option>Select Item</option></select>' +
+                        '</td>' +
+                        '<td>' +
+                        '<select class="form-control input-sm cmbComponent" name="component[]"><option>Select Component</option></select>' +
+                        '</td>' +
+                        '<td><input class=" form-control" type="text" placeholder="Volume / Qty" name="volume[]" required /></td>' +
+                        '<td>' +
+                        '<button class="addFE btn btn-default" type="button"><i class="fa fa-plus"></i> </button>' +
+                        '</td>';
+                    var $tr = $('<tr>').append('<td>' + i + '</td>' + x);
+                    FEDiv.append($tr);
+                    initiateSelect2();
 
                 }
-        });
+                initiateSelect2();
+            }
+        })
     }
 
 

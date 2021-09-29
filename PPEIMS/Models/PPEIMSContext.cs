@@ -24,7 +24,8 @@ namespace PPEIMS.Models
         public DbSet<Request> Requests { get; set; }
 
         public DbSet<RequestDetail> RequestDetails { get; set; }
-
+        public DbSet<RequestDetailUser> RequestDetailUsers { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

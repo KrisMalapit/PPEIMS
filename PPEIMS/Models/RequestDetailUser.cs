@@ -1,10 +1,11 @@
 ﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PPEIMS.Models
 {
-    public class RequestDetailSub
+    public class RequestDetailUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -13,5 +14,7 @@ namespace PPEIMS.Models
         public virtual RequestDetail RequestDetails { get; set; }
         public int UserId { get; set; }
         public virtual User Users { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

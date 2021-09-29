@@ -20,6 +20,5 @@ namespace PPEIMS.Models
         public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
 
-
     }
 }
