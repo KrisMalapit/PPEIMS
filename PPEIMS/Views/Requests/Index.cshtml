@@ -406,7 +406,7 @@
         };
     })();
     function createRequest() {
-
+        console.log($('#tblItem tr').length);
         $('#DetailId').val(0);
 
         if ($('#tblItem tr').length > 2) {
@@ -459,14 +459,14 @@
                 var $trr = '';
                 $('#p_Item > tr').remove();
                 if (responsedata.data.length > 0) {
-
+                    $lastnum = 1;
 
                     for (var i = 0; i < responsedata.data.length; i++) {
                         $trr =
                             '<td><select class="form-control input-sm cmbNo" id=cmbNo' + i + ' name="no[]"><option>Select Item</option></select></td>' +
                             '<td><input class=" form-control" type="text" placeholder="Qty" name="qty[]" required value="' + responsedata.data[i].quantity + '"/></td>'
 
-                        $tdCtr = i == 0 ? '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button>&nbsp; <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button></td>' :
+                        $tdCtr = 
                             '<td>' +
 
                             "<button data-id=" + responsedata.data[i].id + " onclick='showmodaldetail(this);' class='detITEM btn btn-primary' type='button'><i class='glyphicon glyphicon-th-list'></i></button>&nbsp;" +
@@ -509,8 +509,20 @@
                         }).val(responsedata.data[i].itemId).trigger('change');
 
 
-
+                        $lastnum++;
                     }
+
+
+                    $trr =
+                        '<td><select class="form-control input-sm cmbNo" id=cmbNo name="no[]"><option>Select Item</option></select></td>' +
+                        '<td><input class=" form-control" type="text" placeholder="Qty" name="qty[]" required /></td>'
+                    $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>'
+                    $trr = $trr + $tdCtr;
+                    var $tr = $('<tr>').append('<td>' + $lastnum + '</td>' + $trr);
+                    FEDiv.append($tr);
+
+
+
                 } else {
 
                     var i = $('#p_Item tr').length + 1;

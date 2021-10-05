@@ -35,7 +35,7 @@ namespace PPEIMS
             });
 
             services.AddDbContext<PPEIMSContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("PPEIMSContextLocal")
+            options.UseSqlServer(Configuration.GetConnectionString("PPEIMSContextTest")
             , builder => builder.UseRowNumberForPaging() //add this for Incorrect syntax near 'OFFSET'. Invalid usage of the option NEXT in the FETCH statement
             ));
 
@@ -46,8 +46,7 @@ namespace PPEIMS
                   policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://192.168.30.182");
                   policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://californium:8443/");
               })
-
-          );
+            );
             services
                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie(options => {

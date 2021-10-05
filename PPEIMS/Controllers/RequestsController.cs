@@ -162,8 +162,6 @@ namespace PPEIMS.Controllers
             int reqId = fvm.Id;
             try
             {
-
-                
                 if (fvm.Id == 0)
                 {
                     string series_code = "REQUEST";
@@ -257,7 +255,7 @@ namespace PPEIMS.Controllers
                 var v =
 
                _context.RequestDetails
-               .Where(a => a.RequestId == id)
+              .Where(a => a.RequestId == id)
               .Where(a => a.Status != "Deleted")
 
               .Select(a => new
