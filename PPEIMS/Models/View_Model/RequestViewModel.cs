@@ -11,10 +11,11 @@ namespace PPEIMS.Models.View_Model
         public int RequestId { get; set; }
         public string ReferenceNo { get; set; }
         public int[] detail_id { get; set; }
-        public string[] no { get; set; }
+        public int[] no { get; set; }
         public string[] component { get; set; }
         public string[] qty { get; set; }
-       
-        
+        public string[] type { get; set; }
+        public string[] remarks { get; set; }
+
     }
 }

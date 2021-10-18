@@ -21,5 +21,7 @@ namespace PPEIMS.Models
         public string PPE { get; set; }
 
         public string Status { get; set; } = "Active";
+        public int Office { get; set; }
+        public int Field { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using DNTBreadCrumb.Core;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PPEIMS.Models;
 using PPEIMS.Models.View_Model;
 
@@ -151,6 +152,45 @@ namespace PPEIMS.Controllers
                 return Json(ex);
             }
         }
+
+
+        public IActionResult getEmployees(int RequestId)
+        {
+            string status = "";
+
+            int deptId = Convert.ToInt32(User.Identity.GetDepartmentID());
+
+
+            var v =
+
+                _context.Users.Where(e => e.Status == "1")
+                .Where(a => a.DepartmentId == deptId)
+                .Select(a => new {
+                    EmployeeName = a.LastName + ", " + a.FirstName,
+                    a.Id,
+                    IsExisting = _context.RequestDetailUsers.Where(b => b.RequestDetailId == RequestId)
+                                .Where(b => b.Status == "Active").Where(b => b.UserId == a.Id).Count() == 0 ? 0 : 1
+                   
+                });
+
+            status = "success";
+
+
+
+
+
+
+            var model = new
+            {
+                status
+                ,
+                data = v
+            };
+            return Json(model);
+        }
+
+
+
         [HttpPost]
         public IActionResult saveRequest(RequestViewModel fvm)
         {
@@ -160,6 +200,16 @@ namespace PPEIMS.Controllers
             string refno = "";
             string refid = "0";
             int reqId = fvm.Id;
+
+            var items = fvm.no;
+
+            //_context.RequestDetails
+            //.Where(a => a.Status == "Active")
+            //.Where(a => !items.Contains(a.ItemId))
+            //.ToList()
+            //.ForEach(b => { b.Status = "Deleted"; });
+            //_context.SaveChanges();
+
             try
             {
                 if (fvm.Id == 0)
@@ -189,12 +239,16 @@ namespace PPEIMS.Controllers
                 {
                     for (int i = 0; i < fvm.qty.Length; i++)
                     {
-                        var sub = new RequestDetail();
-                        sub.ItemId = Convert.ToInt32(fvm.no[i]);
-                        sub.RequestId = reqId;
-                        sub.Quantity = Convert.ToInt32(fvm.qty[i]);
-                        sub.CreatedDate = DateTime.Now.Date;
-                        sub.Status = "Active";
+                        var sub = new RequestDetail
+                        {
+                            ItemId = Convert.ToInt32(fvm.no[i]),
+                            RequestId = reqId,
+                            Quantity = Convert.ToInt32(fvm.qty[i]),
+                            CreatedDate = DateTime.Now.Date,
+                            Type = fvm.type[i],
+                            Remarks = fvm.remarks[i],
+                            Status = "Active"
+                        };
                         _context.Add(sub);
 
                     }
@@ -209,20 +263,40 @@ namespace PPEIMS.Controllers
                     _context.RequestDetails
                           .Where(a => a.RequestId == fvm.Id)
                           .ToList().ForEach(a => a.Status = "Deleted");
+                    _context.SaveChanges();
+                    
 
                     for (int i = 0; i < fvm.qty.Length; i++)
                     {
-                        var sub = new RequestDetail
-                        {
-                            ItemId = Convert.ToInt32(fvm.no[i]),
-                            RequestId = reqId,
-                            Quantity = Convert.ToInt32(fvm.qty[i]),
-                            CreatedDate = DateTime.Now.Date,
-                            Status = "Active"
-                        };
-                        _context.Add(sub);
+                        var rd = _context.RequestDetails
+                            //.Where(a => a.Status == "Active")
+                            .Where(a => a.RequestId == reqId)
+                            .Where(a => a.ItemId == fvm.no[i])
+                            .Where(a => a.Type == fvm.type[i])
+                            .FirstOrDefault();
 
-                    }
+                        if (rd == null)
+                        {
+                            var sub = new RequestDetail
+                            {
+                                ItemId = Convert.ToInt32(fvm.no[i]),
+                                RequestId = reqId,
+                                Quantity = Convert.ToInt32(fvm.qty[i]),
+                                CreatedDate = DateTime.Now.Date,
+                                Type = fvm.type[i],
+                                Remarks = fvm.remarks[i],
+                                Status = "Active"
+                            };
+                            _context.Add(sub);
+                        }
+                        else
+                        {
+                            rd.Status = "Active";
+                            rd.Quantity = Convert.ToInt32(fvm.qty[i]);
+                            rd.CreatedDate = DateTime.Now.Date;
+                            _context.Update(rd);
+                        }
+                    };
                     _context.SaveChanges();
                     status = "success";
 
@@ -263,6 +337,8 @@ namespace PPEIMS.Controllers
                   ItemId = a.Items.Id,
                   ItemName = a.Items.No + " | " + a.Items.Description,
                   a.Quantity,
+                  a.Remarks,
+                  a.Type,
                   a.Id
 
               });
@@ -306,21 +382,53 @@ namespace PPEIMS.Controllers
             return Json(modelEmp);
         }
         [HttpPost]
-        public ActionResult SaveEmployee(RequestDetailUser member)
+        public ActionResult SaveEmployee(RequestDetailUser[] member, string userid)
         {
+            
             string status = "";
+           
+            int[] userlist = userid.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+
             string message = "";
             try
             {
-                member.Status = "Active";
-                _context.RequestDetailUsers.Add(member);
+               
+                _context.RequestDetailUsers
+                        .Where(a => a.Status == "Active")
+                        .Where(a => a.RequestDetailId == member[0].RequestDetailId)
+                        .Where(a=>!userlist.Contains(a.UserId))
+                        .ToList()
+                        .ForEach(b => { b.Status = "Deleted"; });
                 _context.SaveChanges();
+
+                foreach (var item in member)
+                {
+
+
+
+                    int _cnt = _context.RequestDetailUsers
+                        .Where(a => a.Status == "Active")
+                        .Where(a => a.UserId == item.UserId)
+                        .Where(a => a.RequestDetailId == item.RequestDetailId)
+                        .Count();
+
+                    if (_cnt == 0)
+                    {
+                        item.Status = "Active";
+                        item.CreatedDate = DateTime.Now;
+                        _context.RequestDetailUsers.Add(item);
+                    }
+
+
+                }
+                _context.SaveChanges();
+
                 status = "success";
             }
             catch (Exception e)
             {
                 status = e.ToString();
-                message = e.InnerException.InnerException.Message;
+                message = e.InnerException.Message;
 
             }
             var model = new

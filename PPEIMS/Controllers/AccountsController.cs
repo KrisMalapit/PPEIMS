@@ -92,14 +92,14 @@ namespace PPEIMS.Controllers
             }
 
             string loginresult;
-            if (model.LogInType == "AD")
-            {
-                loginresult = CallAPI("http://aluminum/ADAPI/api/values", model.Domain, model.Username, model.Password);
-            }
-            else
-            {
-                loginresult = "OK";
-            }
+            //if (model.LogInType == "AD")
+            //{
+            //    loginresult = CallAPI("http://aluminum/ADAPI/api/values", model.Domain, model.Username, model.Password);
+            //}
+            //else
+            //{
+            //    loginresult = "OK";
+            //}
            
             loginresult = "OK";
 

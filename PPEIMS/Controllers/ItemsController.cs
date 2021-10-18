@@ -27,7 +27,7 @@ namespace PPEIMS.Controllers
         }
         
         [HttpPost]
-        public ActionResult SaveItem(int id,string PPE)
+        public ActionResult SaveItem(int id,string PPE,int Office, int Field)
         {
             string status = "";
             string message = "";
@@ -35,6 +35,8 @@ namespace PPEIMS.Controllers
             {
                 var item = _context.Items.Find(id);
                 item.PPE = PPE;
+                item.Office = Office;
+                item.Field = Field;
                 _context.Entry(item).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -120,30 +122,29 @@ namespace PPEIMS.Controllers
 
 
                 var v =
-
                _context.Items
               .Where(a => a.Status == "Active")
               .Where(strFilter)
-              
-              //.OrderBy(a => a.FileDate).ThenBy(a => a.Hour)
               .Skip(skip).Take(pageSize)
               .Select(a => new
               {
                   a.No,
                   a.Description,
                   a.Description2,
-                  Inventory = 0,
-                  //a.DescriptionLiquidation,
-                  //a.TypeFuel,
+                  Inventory = _context.ItemDetails.Where(b => b.ItemId == a.Id) 
+                             .Where(b => b.Status == "Active")
+                             .Sum(b => b.Quantity),
                   a.Id
-                  ,a.PPE
-
-
-
+                  ,
+                  a.PPE
+                  ,a.Field
+                  ,a.Office
               });
 
+              
 
-               
+
+
 
                 bool desc = false;
                 if (sortColumnDirection == "desc")
