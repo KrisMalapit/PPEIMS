@@ -8,6 +8,10 @@ namespace PPEIMS.Models
 {
     public class PPEIMSContext : DbContext
     {
+        public PPEIMSContext()
+        {
+        }
+
         public PPEIMSContext(DbContextOptions<PPEIMSContext> options) : base(options)
         {
 
@@ -24,6 +28,10 @@ namespace PPEIMS.Models
         public DbSet<Request> Requests { get; set; }
 
         public DbSet<RequestDetail> RequestDetails { get; set; }
+
+        public DbSet<PPE> PPEs { get; set; }
+
+
         public DbSet<RequestDetailUser> RequestDetailUsers { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)

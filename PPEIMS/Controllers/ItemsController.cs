@@ -7,6 +7,7 @@ using DNTBreadCrumb.Core;
 using PPEIMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PPEIMS.Controllers
 {
@@ -22,21 +23,25 @@ namespace PPEIMS.Controllers
         [BreadCrumb(Title = "Index", Order = 1, IgnoreAjaxRequests = true)]
         public IActionResult Index()
         {
+            ViewData["PPEId"] = new SelectList(_context.PPEs.Where(a=>a.Status == "Active"), "Id", "Name");
+
+
             this.SetCurrentBreadCrumbTitle("Item");
+
             return View();
         }
         
         [HttpPost]
-        public ActionResult SaveItem(int id,string PPE,int Office, int Field)
+        public ActionResult SaveItem(int id,int PPEId)
         {
             string status = "";
             string message = "";
             try
             {
                 var item = _context.Items.Find(id);
-                item.PPE = PPE;
-                item.Office = Office;
-                item.Field = Field;
+                item.PPEId = PPEId;
+                //item.Office = Office;
+                //item.Field = Field;
                 _context.Entry(item).State = EntityState.Modified;
                 _context.SaveChanges();
 
@@ -136,9 +141,10 @@ namespace PPEIMS.Controllers
                              .Sum(b => b.Quantity),
                   a.Id
                   ,
-                  a.PPE
-                  ,a.Field
-                  ,a.Office
+                  a.PPEId
+
+                  //,a.Field
+                  //,a.Office
               });
 
               

@@ -16,14 +16,7 @@
             <div class="modal-body">
                 <input id="itemId" type="hidden" />
 
-                @*<div class="form-group row">
-            <label class="col-lg-2 col-form-label">No</label>
-            <div class="col-lg-10"><input id="itemNo" class="form-control" disabled></div>
-        </div>
-        <div class="form-group row">
-            <label class="col-lg-2 col-form-label">Description</label>
-            <div class="col-lg-10"><input id="itemDescription" class="form-control" disabled></div>
-        </div>*@
+               
                 <div class="row">
                     <div class="col-md-6 ">
                         <div class="form-group row">
@@ -40,7 +33,7 @@
                         <div class="form-group row">
                             <label class="col-md-4 col-form-label">Office  (Months)</label>
                             <div class="col-md-8">
-                                <select class="form-control input-sm" id="itemOffice" name="Office">
+                                @*<select class="form-control input-sm" id="itemOffice" name="Office">
                                     <option value="1">1 Month</option>
                                     <option value="2">2 Months</option>
                                     <option value="3">3 Months</option>
@@ -57,13 +50,13 @@
                                     <option value="36">3 Years</option>
                                     <option value="48">4 Years</option>
                                     <option value="60">5 Years</option>
-                                </select>
+                                </select>*@
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-md-4 col-form-label">Field (Months)</label>
                             <div class="col-md-8">
-                                <select class="form-control input-sm" id="itemField" name="Field">
+                                @*<select class="form-control input-sm" id="itemField" name="Field">
                                     <option value="1">1 Month</option>
                                     <option value="2">2 Months</option>
                                     <option value="3">3 Months</option>
@@ -80,7 +73,7 @@
                                     <option value="36">3 Years</option>
                                     <option value="48">4 Years</option>
                                     <option value="60">5 Years</option>
-                                </select>
+                                </select>*@
                             </div>
                         </div>
                     </div>
@@ -89,15 +82,16 @@
                             <label class="col-lg-4 col-form-label">PPE</label>
                             <div class="col-lg-8">
 
-                                <select class="form-control" id="itemPPE">
-                                    <option value="Safety Helmet">Safety Helmet</option>
-                                    <option value="Safety Shoes">Safety Shoes</option>
-                                    <option value="Boots">Boots</option>
-                                    <option value="Raincoat">Raincoat</option>
-                                    <option value="Safety Harness">Safety Harness</option>
-                                    <option value="Dust Mask">Dust Mask</option>
-                                    <option value="Chin Strap">Chin Strap</option>
-                                </select>
+                                @*<select class="form-control" id="itemPPE">
+            <option value="Safety Helmet">Safety Helmet</option>
+            <option value="Safety Shoes">Safety Shoes</option>
+            <option value="Boots">Boots</option>
+            <option value="Raincoat">Raincoat</option>
+            <option value="Safety Harness">Safety Harness</option>
+            <option value="Dust Mask">Dust Mask</option>
+            <option value="Chin Strap">Chin Strap</option>
+        </select>*@
+                                <select id="PPEId" name="PPEId" class="form-control" asp-items="ViewBag.PPEId"></select>
                             </div>
                         </div>
                     </div>
@@ -146,8 +140,8 @@
                         <th>Item No</th>
                         <th>Description</th>
                         <th>Description 2</th>
-                        <th>Office Exp. (Months)</th>
-                        <th>Field Exp. (Months)</th>
+                        @*<th>Office Exp. (Months)</th>
+                        <th>Field Exp. (Months)</th>*@
                         
                         <th>Inventory</th>
 
@@ -160,8 +154,8 @@
                         <th>Item No</th>
                         <th>Description</th>
                         <th>Description 2</th>
-                        <th>Office Exp. (Months)</th>
-                        <th>Field Exp. (Months)</th>
+                        @*<th>Office Exp. (Months)</th>
+                        <th>Field Exp. (Months)</th>*@
                         <th>Inventory</th>
 
 
@@ -189,14 +183,14 @@
 <script>
     function saveItem() {
         $id = $("#itemId").val();
-        $ppe = $("#itemPPE").val();
-        $office = $("#itemOffice").val();
-        $field = $("#itemField").val();
+        $ppe = $("#PPEId").val();
+        //$office = $("#itemOffice").val();
+        //$field = $("#itemField").val();
 
         $.ajax({
                 url: "@Url.Action("SaveItem")"
                     , method: "POST"
-            , data: { id: $id, PPE: $ppe, Office: $office, Field: $field }
+                    , data: { id: $id, PPEId : $ppe }
                     , dataType: 'json'
                     , success: function (responsedata) {
                         if (responsedata.status == "success") {
@@ -254,13 +248,13 @@
                 //        return moment(data).format("MM-DD-YYYY");
                 //    }
                 //},
-                { "data": "ppe", "name": "PPE", "autoWidth": true },
+                { "data": "ppeId", "name": "PPEId", "autoWidth": true },
                 { "data": "no", "name": "No", "autoWidth": true },
                 { "data": "description", "name": "Description", "autoWidth": true },
                 { "data": "description2", "name": "Description2", "autoWidth": true },
 
-                { "data": "office", "name": "Description2", "autoWidth": true },
-                { "data": "field", "name": "Description2", "autoWidth": true },
+                //{ "data": "office", "name": "Description2", "autoWidth": true },
+                //{ "data": "field", "name": "Description2", "autoWidth": true },
 
                 { "data": "inventory", "name": "Inventory", "autoWidth": true },
                 //{ "data": "typeFuel", "name": "TypeFuel", "autoWidth": true },
@@ -275,7 +269,7 @@
 
 
                         $actions =
-                            "<a title='Edit' data-id=" + row.id + " data-office=" + row.office + " data-field=" + row.field + " data-ppe='" + row.ppe + "' data-no=" + row.no + " data-desc='" + $desc + "' data-desc2='" + $desc2 + "' onclick='showmodal(this);'>Edit</a>";
+                            "<a title='Edit' data-id=" + row.id + "  data-ppe='" + row.ppeId + "' data-no=" + row.no + " data-desc='" + $desc + "' data-desc2='" + $desc2 + "' onclick='showmodal(this);'>Edit</a>";
 
                         return $actions;
                     }
@@ -334,10 +328,10 @@
         $descliq = $(obj).attr('data-descliq') == "null" ? "" : $(obj).attr('data-descliq');
         $type = $(obj).attr('data-type') == "null" ? "" : $(obj).attr('data-type');
 
-        console.log(obj);
+        console.log($ppe);
         $("#itemId").val($id);
         $("#itemNo").val($no);
-        $("#itemPPE").val($ppe);
+        $("#PPEId").val($ppe).trigger('change');
         $("#itemOffice").val($office);
         $("#itemField").val($field);
         $("#itemDescription").val($desc);

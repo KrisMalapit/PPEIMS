@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211020072427_13")]
+    partial class _13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,17 +85,19 @@ namespace PPEIMS.Migrations
 
                     b.Property<string>("Description2");
 
+                    b.Property<int>("Field");
+
                     b.Property<string>("No")
                         .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
-                    b.Property<int?>("PPEId");
+                    b.Property<int>("Office");
+
+                    b.Property<string>("PPE");
 
                     b.Property<string>("Status");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PPEId");
 
                     b.ToTable("Items");
                 });
@@ -173,12 +177,8 @@ namespace PPEIMS.Migrations
                         .IsRequired()
                         .HasMaxLength(20);
 
-                    b.Property<int>("Field");
-
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<int>("Office");
 
                     b.Property<string>("Status");
 
@@ -336,13 +336,6 @@ namespace PPEIMS.Migrations
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PPEIMS.Models.Item", b =>
-                {
-                    b.HasOne("PPEIMS.Models.PPE", "PPEs")
-                        .WithMany()
-                        .HasForeignKey("PPEId");
                 });
 
             modelBuilder.Entity("PPEIMS.Models.ItemDetail", b =>

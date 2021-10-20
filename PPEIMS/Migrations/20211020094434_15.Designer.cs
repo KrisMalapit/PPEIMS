@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211020094434_15")]
+    partial class _15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +89,7 @@ namespace PPEIMS.Migrations
                         .IsRequired()
                         .HasColumnType("VARCHAR(20)");
 
-                    b.Property<int?>("PPEId");
+                    b.Property<int>("PPEId");
 
                     b.Property<string>("Status");
 
@@ -342,7 +344,8 @@ namespace PPEIMS.Migrations
                 {
                     b.HasOne("PPEIMS.Models.PPE", "PPEs")
                         .WithMany()
-                        .HasForeignKey("PPEId");
+                        .HasForeignKey("PPEId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PPEIMS.Models.ItemDetail", b =>

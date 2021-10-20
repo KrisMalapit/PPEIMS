@@ -4,13 +4,118 @@
     ViewData["Title"] = "Index";
 }
 
+<div class="modal inmodal in " id="modalPPE" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content animated fadeIn">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalSnapTitle">PPE Matrix </h4>
+                <small class="font-bold">Details of this item</small>
+            </div>
+            <div class="modal-body">
+                <input id="itemId" type="hidden" />
+
+
+                <div class="row">
+                    <div class="col-md-12 ">
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Dept Code</label>
+                            <div class="col-md-10"><input id="deptCode" class="form-control" disabled></div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-2 col-form-label">Name</label>
+                            <div class="col-md-10"><input id="deptName" class="form-control" disabled></div>
+                        </div>
+                    </div>
+
+
+                    @*<div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-lg-4 col-form-label">PPE</label>
+                    <div class="col-lg-8">
+
+                        <select class="form-control" id="itemPPE">
+                            <option value="Safety Helmet">Safety Helmet</option>
+                            <option value="Safety Shoes">Safety Shoes</option>
+                            <option value="Boots">Boots</option>
+                            <option value="Raincoat">Raincoat</option>
+                            <option value="Safety Harness">Safety Harness</option>
+                            <option value="Dust Mask">Dust Mask</option>
+                            <option value="Chin Strap">Chin Strap</option>
+                        </select>
+                    </div>
+                </div>
+            </div>*@
+                </div>
+                <form id="frmItem">
+
+                    <input id="DetailId" name="Id" value="0" type="hidden" />
+                    <div class="form-group">
+                        <script id="ITEMtemplate" type="text/template">
+                            <td>
+                             
+                                <select class="form-control cmbPPE" name="no[]">
+                                    <option value="Safety Helmet">Safety Helmet</option>
+                                    <option value="Safety Shoes">Safety Shoes</option>
+                                    <option value="Boots">Boots</option>
+                                    <option value="Raincoat">Raincoat</option>
+                                    <option value="Safety Harness">Safety Harness</option>
+                                    <option value="Dust Mask">Dust Mask</option>
+                                    <option value="Chin Strap">Chin Strap</option>
+                                </select>
+
+
+                            </td>
+                            <td>
+                                <input class=" form-control" type="text" placeholder="Office" name="office[]" required />
+                            </td>
+                            <td>
+                                <input class=" form-control" type="text" placeholder="Field" name="field[]" required />
+                            </td>
+                           
+                            <td>
+                                <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>
+                            </td>
+                        </script>
+                        <table class="table table-bordered table-hover" id="tblItem">
+                            <thead>
+                                <tr>
+
+                                    <th width="35%">Item</th>
+                                    <th width="10%">Office</th>
+                                    <th width="15%">Field</th>
+                                   
+                                    <th width="10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="p_Item">
+                                <tr id="trAction">
+
+                                    <td colspan="3"></td>
+
+                                    <td>
+                                        <button class="addFE btn btn-default" type="button"><i class="fa fa-plus"></i> </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </form>
+
+                <button id="btnSave" class="btn btn-success" onclick="saveItem();">Save</button>
+                <button data-dismiss="modal" class="btn btn-default">Close</button>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <div class="col-lg-12">
         <div class="ibox float-e-margins">
             <div class="ibox-content">
-                <p>
-                    <a asp-action="Create">Create New</a>
-                </p>
+                
                 <table id="tbl" class="table table-striped table-no-bordered table-hover dataTable" style="width: 100%!important">
                     <thead>
                         <tr>
@@ -26,6 +131,31 @@
         </div>
     </div>
     <script>
+        var FEDiv = $('#p_Item');
+        $(document).on('click', '.addFE', function () {
+            var i = ($('#p_Item tr').length - 1) + 1;
+            var $tr = $('<tr>').append($('#ITEMtemplate').html());
+            //if (i==1) {
+            //    FEDiv.prepend($tr);
+            //} else {
+            //    $("#tblItem tbody:last-child").before($tr);
+            //}
+
+            $("#trAction").before($tr);
+            initiateSelect2()
+
+
+
+        })
+        $(document).on('click', '.remITEM', function () {
+            var i = $('#p_Item tr').length;
+            if (i > 1) {
+                $(this).closest('tr').remove();
+            }
+            return false;
+        });
+
+
      $(document).ready(function () {
         var data = [];
 
@@ -42,16 +172,14 @@
                                     for (var i = 0; i < responsedata.data.length; i++) {
 
                                         var $id = responsedata.data[i].id;
-                                        var linkDetails = "@Url.Action("Details", "Departments")?id="+ $id;
-                                        var linkEdit = "@Url.Action("Edit", "Departments")?id="+ $id;
-                                        var linkDelete = "@Url.Action("Delete", "Departments")?id=" + $id;
+                                        var $code = responsedata.data[i].code;
+                                        var $name = responsedata.data[i].name;
+                                        
 
                                         $actions =
-                                            '<a title="Edit" class="btn btn-white btn-bitbucket" href="' + linkEdit + '"><i class="fa fa-list"></i></a> ' +
-
-                                            '<a title="Delete" class="btn btn-danger btn-bitbucket" href="' + linkDelete + '"><i class="fa fa-trash"></i></a>';
-                                        data.push([responsedata.data[i].code
-                                            , responsedata.data[i].name
+                                            "<a title='Matrix' data-id=" + $id + "' data-code=" + $code + " data-name=" + $name + "' onclick='showmodal(this);'>Matrix</a>";
+                                              data.push([$code
+                                            , $name
                                             , responsedata.data[i].companyName
                                             ,$actions]);
 
@@ -73,5 +201,33 @@
 
 
 
-    });
+        });
+        function showmodal(obj) {
+            //$id = $(obj).attr('data-id');
+            $code = $(obj).attr('data-code');
+            $name = $(obj).attr('data-name');
+            //$ppe = $(obj).attr('data-ppe');
+            //$office = $(obj).attr('data-office');
+            //$field = $(obj).attr('data-field');
+            //$desc2 = $(obj).attr('data-desc2') == "null" ? "" : $(obj).attr('data-desc2');
+            //$descliq = $(obj).attr('data-descliq') == "null" ? "" : $(obj).attr('data-descliq');
+            //$type = $(obj).attr('data-type') == "null" ? "" : $(obj).attr('data-type');
+
+            //console.log(obj);
+            //$("#itemId").val($id);
+            $("#deptCode").val($code);
+            $("#deptName").val($name);
+            //$("#itemOffice").val($office);
+            //$("#itemField").val($field);
+            //$("#itemDescription").val($desc);
+            //$("#itemDescription2").val($desc2);
+            //$("#itemDescription").val($desc);
+            //reloadtable($id);
+
+
+
+            $('#modalPPE').modal('show');
+
+
+        }
     </script>
