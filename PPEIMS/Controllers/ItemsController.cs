@@ -116,9 +116,28 @@ namespace PPEIMS.Controllers
                 int recCount =
 
                 _context.Items
-                .Where(a => a.Status == "Active")
+                 .Where(a => a.Status == "Active")
+                .Select(a => new
+                {
+                    a.No,
+                    a.Description,
+                    a.Description2,
+                    Inventory = _context.ItemDetails.Where(b => b.ItemId == a.Id)
+                             .Where(b => b.Status == "Active")
+                             .Sum(b => b.Quantity),
+                    a.Id
+                  ,
+                    a.PPEId
+                  ,
+                    PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name
+                    //,a.Field
+                    //,a.Office
+                  
+                })
+               
                
                 .Where(strFilter)
+
                 .Count();
 
                 recordsTotal = recCount;
@@ -129,8 +148,7 @@ namespace PPEIMS.Controllers
                 var v =
                _context.Items
               .Where(a => a.Status == "Active")
-              .Where(strFilter)
-              .Skip(skip).Take(pageSize)
+             
               .Select(a => new
               {
                   a.No,
@@ -142,10 +160,11 @@ namespace PPEIMS.Controllers
                   a.Id
                   ,
                   a.PPEId
-
+                  ,PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name
                   //,a.Field
                   //,a.Office
-              });
+              }).Where(strFilter)
+              .Skip(skip).Take(pageSize);
 
               
 
