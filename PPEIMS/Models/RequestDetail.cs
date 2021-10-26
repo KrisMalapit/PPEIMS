@@ -21,6 +21,8 @@ namespace PPEIMS.Models
         public DateTime CreatedDate { get; set; }
         public string Type { get; set; }
         public string Remarks { get; set; }
+        public int QuantityIssued { get; set; }
+        
 
     }
 }

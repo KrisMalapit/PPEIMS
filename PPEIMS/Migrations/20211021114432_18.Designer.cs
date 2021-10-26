@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211021114432_18")]
+    partial class _18
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,8 +244,6 @@ namespace PPEIMS.Migrations
                     b.Property<int>("ItemId");
 
                     b.Property<int>("Quantity");
-
-                    b.Property<int>("QuantityIssued");
 
                     b.Property<string>("Remarks");
 

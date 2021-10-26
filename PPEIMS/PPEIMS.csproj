@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\nestedData.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DNTBreadCrumb.Core" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />

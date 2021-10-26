@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using DNTBreadCrumb.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PPEIMS.Models;
+using PPEIMS.Models.View_Model;
+
 
 namespace PPEIMS.Controllers
 {
@@ -20,11 +22,13 @@ namespace PPEIMS.Controllers
         }
         [BreadCrumb(Title = "Index", Order = 1, IgnoreAjaxRequests = true)]
         // GET: Departments
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             this.SetCurrentBreadCrumbTitle("Departments");
-            var PPEIMSContext = _context.Departments.Include(d => d.Companies);
-            return View(await PPEIMSContext.ToListAsync());
+           
+            //ViewData["PPEId"] = new SelectList(_context.PPEs.Where(a => a.Status == "Active"), "Id", "Name");
+
+            return View();
         }
         public IActionResult getData()
         {
@@ -59,6 +63,27 @@ namespace PPEIMS.Controllers
                 data = v
             };
             return Json(model);
+        }
+        public JsonResult SearchPPE(string q)
+        {
+            var model = _context.PPEs
+                .Where(a => a.Status == "Active")
+                //.Where(a => a.Name.ToUpper().Contains(q.ToUpper())
+                //|| a.Code.ToUpper().Contains(q.ToUpper()))
+                .Select(b => new
+                {
+                    id = b.Id,
+                    text = b.Name,
+
+                });
+            var x = model.ToList();
+            var modelItem = new
+            {
+                total_count = model.Count(),
+                incomplete_results = false,
+                items = model.ToList(),
+            };
+            return Json(modelItem);
         }
         // GET: Departments/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -251,6 +276,108 @@ namespace PPEIMS.Controllers
         private bool DepartmentExists(int id)
         {
             return _context.Departments.Any(e => e.ID == id);
+        }
+        [HttpPost]
+        public IActionResult saveRequest(DepartmentPPE[] member, string ppeid)
+        {
+            int deptid = member[0].DepartmentId;
+            string status = "";
+            
+            string message = "";
+            status = "success";
+            try
+            {
+                int[] ppelist = ppeid.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                
+                _context.DepartmentPPEs
+                        .Where(a => a.Status == "Active")
+                        .Where(a => a.DepartmentId == member[0].DepartmentId)
+                        .Where(a => !ppelist.Contains(a.PPEId))
+                        .ToList()
+                        .ForEach(b => { b.Status = "Deleted"; });
+                _context.SaveChanges();
+
+                foreach (var item in member)
+                {
+                    int _cnt = _context.DepartmentPPEs
+                        .Where(a => a.Status == "Active")
+                        .Where(a => a.DepartmentId == item.DepartmentId)
+                        .Where(a => a.PPEId == item.PPEId).Count();
+
+                    if (_cnt == 0)
+                    {
+                        item.Status = "Active";
+                        item.CreatedDate = DateTime.Now;
+                        _context.DepartmentPPEs.Add(item);
+                    }
+                    else
+                    {
+                        
+                      
+                        item.Status = "Active";
+                        
+                        _context.Update(item);
+                    }
+
+
+                }
+                _context.SaveChanges();
+
+                status = "success";
+            }
+            catch (Exception e)
+            {
+                status = e.ToString();
+                message = e.Message;
+               
+
+            }
+            var model = new
+            {
+                status,
+                message,
+                refid = deptid
+            };
+            return Json(model);
+        }
+        public IActionResult getDataDetails(int id)
+        {
+            string strFilter = "";
+            try
+            {
+
+                var v =
+
+               _context.DepartmentPPEs
+              .Where(a => a.DepartmentId == id)
+              .Where(a => a.Status != "Deleted")
+
+              .Select(a => new
+              {
+                  a.PPEId,
+                  PPEName = a.PPEs.Name,
+                  a.Field,
+                  a.Office,
+                  a.DepartmentId,
+                  a.Id
+
+              });
+
+
+                var model = new
+                {
+                    data = v.ToList()
+                };
+
+
+
+
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                return Json(ex);
+            }
         }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211021051749_17")]
+    partial class _17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,33 +72,6 @@ namespace PPEIMS.Migrations
                     b.HasData(
                         new { ID = 1, Code = "NA", CompanyId = 1, Name = "NOTSET", Status = "Deleted" }
                     );
-                });
-
-            modelBuilder.Entity("PPEIMS.Models.DepartmentPPE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<int>("DepartmentId");
-
-                    b.Property<int>("Field");
-
-                    b.Property<int>("Office");
-
-                    b.Property<int>("PPEId");
-
-                    b.Property<string>("Status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("PPEId");
-
-                    b.ToTable("DepartmentPPEs");
                 });
 
             modelBuilder.Entity("PPEIMS.Models.Item", b =>
@@ -243,8 +218,6 @@ namespace PPEIMS.Migrations
 
                     b.Property<int>("Quantity");
 
-                    b.Property<int>("QuantityIssued");
-
                     b.Property<string>("Remarks");
 
                     b.Property<int>("RequestId");
@@ -360,19 +333,6 @@ namespace PPEIMS.Migrations
                     b.HasOne("PPEIMS.Models.Company", "Companies")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PPEIMS.Models.DepartmentPPE", b =>
-                {
-                    b.HasOne("PPEIMS.Models.Department", "Departments")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PPEIMS.Models.PPE", "PPEs")
-                        .WithMany()
-                        .HasForeignKey("PPEId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

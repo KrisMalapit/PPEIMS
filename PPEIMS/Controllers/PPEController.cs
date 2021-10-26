@@ -36,8 +36,8 @@ namespace PPEIMS.Controllers
 
                     a.Code
                     , a.Name
-                    ,a.Office
-                    ,a.Field
+                    //,a.Office
+                    //,a.Field
                     , a.Id
 
 

@@ -31,7 +31,7 @@ namespace PPEIMS.Models
 
         public DbSet<PPE> PPEs { get; set; }
 
-
+        public DbSet<DepartmentPPE> DepartmentPPEs { get; set; }
         public DbSet<RequestDetailUser> RequestDetailUsers { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)

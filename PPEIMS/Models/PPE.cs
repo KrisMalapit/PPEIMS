@@ -15,8 +15,8 @@ namespace PPEIMS.Models
         [Required]
         public string Name { get; set; }
         public string Status { get; set; } = "Active";
-        public int Office { get; set; }
-        public int Field { get; set; }
+        //public int Office { get; set; }
+        //public int Field { get; set; }
         //public PPE()
         //{
         //    Status = "Active";

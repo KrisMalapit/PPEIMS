@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Threading.Tasks;
 using DNTBreadCrumb.Core;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using PPEIMS.Models;
 using PPEIMS.Models.View_Model;
 
@@ -189,7 +186,56 @@ namespace PPEIMS.Controllers
             return Json(model);
         }
 
+        public IActionResult getEmployeesView(int RequestId)
+        {
+            string status = "";
+            try
+            {
+                int deptId = Convert.ToInt32(User.Identity.GetDepartmentID());
 
+
+                var v =
+
+                     _context.RequestDetailUsers.Where(b => b.RequestDetailId == RequestId)
+                                    .Where(b => b.Status == "Active")
+                                    .Select(a => new
+                                    {
+
+                                        EmployeeName = a.Users.Name
+                                    });
+
+
+
+
+                status = "success";
+                var model = new
+                {
+                    status
+                ,
+                    data = v
+                };
+                return Json(model);
+            }
+            catch (Exception e)
+            {
+
+                var model = new
+                {
+                    status = "fail"
+                ,
+                    data = e.Message
+                };
+                return Json(model);
+            }
+            
+
+
+
+
+
+
+            
+        }
 
         [HttpPost]
         public IActionResult saveRequest(RequestViewModel fvm)
@@ -247,6 +293,7 @@ namespace PPEIMS.Controllers
                             CreatedDate = DateTime.Now.Date,
                             Type = fvm.type[i],
                             Remarks = fvm.remarks[i],
+                            QuantityIssued = Convert.ToInt32(fvm.qty[i]),
                             Status = "Active"
                         };
                         _context.Add(sub);
@@ -285,7 +332,8 @@ namespace PPEIMS.Controllers
                                 CreatedDate = DateTime.Now.Date,
                                 Type = fvm.type[i],
                                 Remarks = fvm.remarks[i],
-                                Status = "Active"
+                                Status = "Active",
+                                QuantityIssued = Convert.ToInt32(fvm.qty[i])
                             };
                             _context.Add(sub);
                         }
@@ -294,6 +342,8 @@ namespace PPEIMS.Controllers
                             rd.Status = "Active";
                             rd.Quantity = Convert.ToInt32(fvm.qty[i]);
                             rd.CreatedDate = DateTime.Now.Date;
+                            rd.Type = fvm.type[i];
+                            rd.Remarks = fvm.remarks[i];
                             _context.Update(rd);
                         }
                     };
@@ -320,6 +370,40 @@ namespace PPEIMS.Controllers
             };
             return Json(modelItem);
         }
+        public IActionResult GetInventory(int itemid)
+        {
+            int inv = 0;
+            string status = "";
+            string message = "";
+            
+
+            try
+            {
+                
+                inv = _context.ItemDetails.Where(b => b.ItemId == itemid)
+                            .Where(b => b.Status == "Active")
+                            .Sum(b => b.Quantity);
+                status = "success";
+              
+            }
+            catch (Exception e)
+            {
+                status = "fail";
+                message = e.Message;
+            }
+
+
+            var model = new
+            {
+                status ,
+                message ,
+                inv
+            };
+            return Json(model);
+
+
+
+        }
         public IActionResult getDataDetails(int id)
         {
             string strFilter = "";
@@ -339,7 +423,9 @@ namespace PPEIMS.Controllers
                   a.Quantity,
                   a.Remarks,
                   a.Type,
+                 
                   a.Id
+                  ,a.QuantityIssued
 
               });
 
@@ -357,6 +443,61 @@ namespace PPEIMS.Controllers
             catch (Exception ex)
             {
                 return Json(ex);
+            }
+        }
+        public IActionResult getDataDetailsView(int id)
+        {
+            string status = "";
+            try
+            {
+
+                var v =
+
+               _context.RequestDetails
+              .Where(a => a.RequestId == id)
+              .Where(a => a.Status != "Deleted")
+
+              .Select(a => new
+              {
+                  ItemId = a.Items.Id,
+                  ItemName = a.Items.No + " | " + a.Items.Description,
+                  a.Quantity,
+                  a.Remarks,
+                  a.Type,
+                  Inventory = _context.ItemDetails.Where(b => b.ItemId == a.ItemId)
+                            .Where(b => b.Status == "Active")
+                            .Sum(b => b.Quantity),
+
+                  a.QuantityIssued,
+                  a.Id
+
+              });
+
+                status = "success";
+
+                var model = new
+                {
+                    status
+                    ,
+                    data = v.ToList()
+
+                };
+
+
+
+
+                return Json(model);
+
+            }
+            catch (Exception ex)
+            {
+                var model = new
+                {
+                    status = "fail"
+                    ,
+                    message = ex.Message
+                };
+                return Json(model);
             }
         }
         public JsonResult SearchEmployee(string q)
@@ -436,6 +577,54 @@ namespace PPEIMS.Controllers
                 status,
                 message
             };
+            return Json(model);
+        }
+        public JsonResult saveQtyIssued(int id,int qty)
+        {
+            string message = "";
+            string status = "";
+
+
+            try
+            {
+                var req = _context.RequestDetails.Find(id);
+                //var emp = _context.Employees.Find(att.EmployeeId);
+                //string empno = emp.EmployeeNo;
+                //string empname = emp.LastName + ", " + emp.FirstName;
+                //string attdate = att.CreatedDate.Date.ToString("MM/dd/yyyy");
+
+                req.QuantityIssued = qty;
+                _context.Update(req);
+                _context.SaveChanges();
+
+                status = "success";
+
+                
+            }
+            catch (Exception e)
+            {
+                status = "fail";
+                message = e.Message;
+                throw;
+            }
+
+            var model = new
+            {
+                status,
+                message
+            };
+
+
+
+            Log log = new Log
+            {
+                Descriptions = "Update Record. ID:" + id,
+                UserId = User.Identity.GetUserName(),
+                Status = status
+            };
+            _context.Add(log);
+            _context.SaveChanges();
+
             return Json(model);
         }
     }

@@ -3,7 +3,24 @@
 @{
     ViewData["Title"] = "Index";
 }
+<style>
+    .error-input {
+        border-color: hsl(0, 76%, 50%) !important;
+    }
 
+    /*.modal-md {
+        width: 80% !important
+    }*/
+
+    .modal-dialog {
+        max-width: 50%;
+        margin: 1.75rem auto;
+    }
+
+ 
+</style>
+
+<link href="~/css/plugins/select2/select2-bootstrap.min.css" rel="stylesheet">
 <div class="modal inmodal in " id="modalPPE" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content animated fadeIn">
@@ -28,23 +45,7 @@
                     </div>
 
 
-                    @*<div class="col-md-6">
-                <div class="form-group row">
-                    <label class="col-lg-4 col-form-label">PPE</label>
-                    <div class="col-lg-8">
-
-                        <select class="form-control" id="itemPPE">
-                            <option value="Safety Helmet">Safety Helmet</option>
-                            <option value="Safety Shoes">Safety Shoes</option>
-                            <option value="Boots">Boots</option>
-                            <option value="Raincoat">Raincoat</option>
-                            <option value="Safety Harness">Safety Harness</option>
-                            <option value="Dust Mask">Dust Mask</option>
-                            <option value="Chin Strap">Chin Strap</option>
-                        </select>
-                    </div>
-                </div>
-            </div>*@
+                   
                 </div>
                 <form id="frmItem">
 
@@ -53,25 +54,53 @@
                         <script id="ITEMtemplate" type="text/template">
                             <td>
                              
-                                <select class="form-control cmbPPE" name="no[]">
-                                    <option value="Safety Helmet">Safety Helmet</option>
-                                    <option value="Safety Shoes">Safety Shoes</option>
-                                    <option value="Boots">Boots</option>
-                                    <option value="Raincoat">Raincoat</option>
-                                    <option value="Safety Harness">Safety Harness</option>
-                                    <option value="Dust Mask">Dust Mask</option>
-                                    <option value="Chin Strap">Chin Strap</option>
+                                <select class="form-control input-sm cmbPPE" name="PPEId[]">
+                                    
                                 </select>
 
-
                             </td>
                             <td>
-                                <input class=" form-control" type="text" placeholder="Office" name="office[]" required />
+                                @*<input class=" form-control" type="text" placeholder="Office" name="office[]" required />*@
+                                <select class="form-control input-sm" name="Office[]">
+                                    <option value="1">1 Month</option>
+                                    <option value="2">2 Months</option>
+                                    <option value="3">3 Months</option>
+                                    <option value="4">4 Months</option>
+                                    <option value="5">5 Months</option>
+                                    <option value="6">6 Months</option>
+                                    <option value="7">7 Months</option>
+                                    <option value="8">8 Months</option>
+                                    <option value="9">9 Months</option>
+                                    <option value="10">10 Months</option>
+                                    <option value="11">11 Months</option>
+                                    <option value="12">1 Year</option>
+                                    <option value="24">2 Years</option>
+                                    <option value="36">3 Years</option>
+                                    <option value="48">4 Years</option>
+                                    <option value="60">5 Years</option>
+                                </select>
                             </td>
                             <td>
-                                <input class=" form-control" type="text" placeholder="Field" name="field[]" required />
+                                @*<input class=" form-control" type="text" placeholder="Field" name="field[]" required />*@
+                                <select class="form-control input-sm"  name="Field[]">
+                                    <option value="1">1 Month</option>
+                                    <option value="2">2 Months</option>
+                                    <option value="3">3 Months</option>
+                                    <option value="4">4 Months</option>
+                                    <option value="5">5 Months</option>
+                                    <option value="6">6 Months</option>
+                                    <option value="7">7 Months</option>
+                                    <option value="8">8 Months</option>
+                                    <option value="9">9 Months</option>
+                                    <option value="10">10 Months</option>
+                                    <option value="11">11 Months</option>
+                                    <option value="12">1 Year</option>
+                                    <option value="24">2 Years</option>
+                                    <option value="36">3 Years</option>
+                                    <option value="48">4 Years</option>
+                                    <option value="60">5 Years</option>
+                                </select>
                             </td>
-                           
                             <td>
                                 <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>
                             </td>
@@ -83,18 +112,18 @@
                                     <th width="35%">Item</th>
                                     <th width="10%">Office</th>
                                     <th width="15%">Field</th>
-                                   
+
                                     <th width="10%">Actions</th>
+                                    <th hidden>Id</th>
                                 </tr>
                             </thead>
                             <tbody id="p_Item">
                                 <tr id="trAction">
-
                                     <td colspan="3"></td>
-
                                     <td>
                                         <button class="addFE btn btn-default" type="button"><i class="fa fa-plus"></i> </button>
                                     </td>
+                                    <td hidden>Id</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -134,13 +163,13 @@
         var FEDiv = $('#p_Item');
         $(document).on('click', '.addFE', function () {
             var i = ($('#p_Item tr').length - 1) + 1;
-            var $tr = $('<tr>').append($('#ITEMtemplate').html());
+            var $tr = $('<tr class="trItems">').append($('#ITEMtemplate').html());
             //if (i==1) {
             //    FEDiv.prepend($tr);
             //} else {
             //    $("#tblItem tbody:last-child").before($tr);
             //}
-
+           
             $("#trAction").before($tr);
             initiateSelect2()
 
@@ -154,7 +183,118 @@
             }
             return false;
         });
+    function saveItem() {
+        var cnt = 0;
+       
 
+        $('#frmItem').find('input').each(function () {
+            if ($(this).prop('required')) {
+                if (!$(this).val()) {
+                    cnt = 1;
+                    $(this).addClass("error-input");
+                } else {
+                    $(this).removeClass("error-input");
+                }
+            }
+        });
+
+        if (cnt > 0) {
+            toastr["error"]("Fill all required fields", "Error")
+            toastr.options = {
+                "closeButton": true,
+                "showDuration": "3000",
+            }
+            return false;
+        }
+
+
+        var strdept = '';
+        var item = [];
+
+        $("#tblItem tbody .trItems").each(function () {
+            
+            if (strdept != '') {
+                strdept += ",";
+            }
+            strdept += $(this).find("td:eq(0)").find("select").val();
+
+            var obj = {
+
+                DepartmentId: $("#DetailId").val(),
+                PPEId: $(this).find("td:eq(0)").find("select").val(),
+                Office: $(this).find("td:eq(1)").find("select").val(),
+                Field: $(this).find("td:eq(2)").find("select").val(),
+                Id: $(this).find("td:eq(4)").text(),
+                //QuantityReceived: $(this).find("input").val(),
+                //haveRecord: $haveRecord
+            }
+            item.push(obj)
+        });
+        console.log(item);
+  
+    
+
+        $.ajax({
+            url: "@Url.Action("saveRequest")"
+            , method: "POST"
+            , data: { member: item, ppeid:strdept}
+            , dataType: 'json'
+             , success: function (responsedata) {
+                if (responsedata.status == "success") {
+                    toastr["success"]("Form saved!", "<b>Success</b> ")
+                    $("#DetailId").val(responsedata.refid);
+                    //loadDatatable();
+                    reloadtable(responsedata.refid);
+
+                } else {
+                    toastr["error"](responsedata.message)
+                    toastr.options = {
+                        "closeButton": true
+                    }
+                }
+            }
+        })
+
+
+    }
+     function initiateSelect2() {
+         $(".cmbPPE").select2({
+            dropdownParent: $('#modalPPE .modal-content'),
+            width: '100%',
+            theme: 'bootstrap'
+        });
+
+
+
+
+        $(".cmbPPE").select2({
+        dropdownParent: $('#modalPPE .modal-content'),
+        width: '100%',
+        theme: 'bootstrap',
+            ajax: {
+                url: "@Url.Action("SearchPPE")",
+                dataType: 'json',
+                delay: 2000,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, page) {
+                    return {
+                        results: data.items,
+
+                    };
+                },
+
+                cache: false
+        },
+       
+        });
+
+
+    }
 
      $(document).ready(function () {
         var data = [];
@@ -174,10 +314,10 @@
                                         var $id = responsedata.data[i].id;
                                         var $code = responsedata.data[i].code;
                                         var $name = responsedata.data[i].name;
-                                        
+
 
                                         $actions =
-                                            "<a title='Matrix' data-id=" + $id + "' data-code=" + $code + " data-name=" + $name + "' onclick='showmodal(this);'>Matrix</a>";
+                                            "<a title='Matrix' data-id=" + $id + " data-code='" + $code + "' data-name='" + $name + "' onclick='showmodal(this);'>Matrix</a>";
                                               data.push([$code
                                             , $name
                                             , responsedata.data[i].companyName
@@ -203,7 +343,7 @@
 
         });
         function showmodal(obj) {
-            //$id = $(obj).attr('data-id');
+            $id = $(obj).attr('data-id');
             $code = $(obj).attr('data-code');
             $name = $(obj).attr('data-name');
             //$ppe = $(obj).attr('data-ppe');
@@ -214,7 +354,7 @@
             //$type = $(obj).attr('data-type') == "null" ? "" : $(obj).attr('data-type');
 
             //console.log(obj);
-            //$("#itemId").val($id);
+            $("#DetailId").val($id);
             $("#deptCode").val($code);
             $("#deptName").val($name);
             //$("#itemOffice").val($office);
@@ -222,7 +362,7 @@
             //$("#itemDescription").val($desc);
             //$("#itemDescription2").val($desc2);
             //$("#itemDescription").val($desc);
-            //reloadtable($id);
+            reloadtable($id);
 
 
 
@@ -230,4 +370,139 @@
 
 
         }
+        function reloadtable(_id) {
+
+        $.ajax({
+            url: "@Url.Action("getDataDetails")"
+            , method: "POST"
+            , dataType: 'json'
+            , data: { id: _id }
+            , async: false
+            , success: function (responsedata) {
+
+                var $trr = '';
+                $('#p_Item > tr').remove();
+                if (responsedata.data.length > 0) {
+                    $lastnum = 1;
+
+                    for (var i = 0; i < responsedata.data.length; i++) {
+                       
+
+                        $trr =
+
+                            '<td>' +
+                        '<select class="form-control input-sm cmbPPE" id=cmbPPE' + i + ' name="PPEId[]">' +
+                            
+                        '<td>' +
+                        '<select class="form-control input-sm cmbOffice" id=cmbOffice' + i + ' name="Office[]">' +
+                                    '<option value="1">1 Month</option>' +
+                                    '<option value="2">2 Months</option>' +
+                                    '<option value="3">3 Months</option>' +
+                                    '<option value="4">4 Months</option>' +
+                                    '<option value="5">5 Months</option>' +
+                                    '<option value="6">6 Months</option>' +
+                                    '<option value="7">7 Months</option>' +
+                                    '<option value="8">8 Months</option>' +
+                                    '<option value="9">9 Months</option>' +
+                                    '<option value="10">10 Months</option>' +
+                                    '<option value="11">11 Months</option>' +
+                                    '<option value="12">1 Year</option>' +
+                                    '<option value="24">2 Years</option>' +
+                                    '<option value="36">3 Years</option>' +
+                                    '<option value="48">4 Years</option>' +
+                                    '<option value="60">5 Years</option>' +
+                                '</select>' +
+                            '</td>' +
+                        '<td>' +
+                            '<select class="form-control input-sm cmbField" id=cmbField' + i + ' name="Field[]">' +
+                                    '<option value="1">1 Month</option>' +
+                                    '<option value="2">2 Months</option>' +
+                                    '<option value="3">3 Months</option>' +
+                                    '<option value="4">4 Months</option>' +
+                                    '<option value="5">5 Months</option>' +
+                                    '<option value="6">6 Months</option>' +
+                                    '<option value="7">7 Months</option>' +
+                                    '<option value="8">8 Months</option>' +
+                                    '<option value="9">9 Months</option>' +
+                                    '<option value="10">10 Months</option>' +
+                                    '<option value="11">11 Months</option>' +
+                                    '<option value="12">1 Year</option>' +
+                                    '<option value="24">2 Years</option>' +
+                                    '<option value="36">3 Years</option>' +
+                                    '<option value="48">4 Years</option>' +
+                                    '<option value="60">5 Years</option>' +
+                                '</select>' +
+                            '</td><td>' +
+                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
+                            '</td>' +
+                        '<td hidden>' + responsedata.data[i].id + '</td>';
+
+                        var $tr = $('<tr class="trItems">').append($trr);
+                        FEDiv.append($tr);
+
+                        //Item
+                        $('#cmbPPE' + i).append(new Option("", ""));
+                        $('#cmbPPE' + i).append(new Option(responsedata.data[i].ppeName, responsedata.data[i].ppeId));
+                        $('#cmbPPE' + i).select2({
+                            dropdownParent: $('#modalPPE .modal-content'),
+                            width: '100%',
+                            theme: 'bootstrap',
+                            ajax: {
+                                    url: "@Url.Action("SearchPPE")",
+                                    dataType: 'json',
+                                    delay: 2000,
+                                    data: function (params) {
+                                        return {
+                                            q: params.term, // search term
+                                            page: params.page
+                                        };
+                                    },
+                                    processResults: function (data, page) {
+                                        return {
+                                            results: data.items,
+
+                                        };
+                                    },
+
+                                cache: false
+                            },
+
+                           
+
+                        }).val(responsedata.data[i].ppeId).trigger('change');
+
+
+                        $lastnum++;
+
+
+                        $('#cmbOffice' + i).val(responsedata.data[i].office).trigger('change');
+                        $('#cmbField' + i).val(responsedata.data[i].field).trigger('change');
+                    }
+
+
+                    $trr =
+                        '<td colspan="3"></td>' 
+                    $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>'
+                    $trr = $trr + $tdCtr;
+                    var $tr = $('<tr id="trAction">').append($trr);
+                    FEDiv.append($tr);
+
+
+
+                } else {
+
+                  
+                    $trr =
+                        '<td colspan="3"></td>'
+                    $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>' +
+                        '<td hidden>0</td>';
+                    $trr = $trr + $tdCtr;
+                    var $tr = $('<tr id="trAction">').append($trr);
+                    FEDiv.append($tr);
+
+                }
+                initiateSelect2();
+            }
+        })
+    }
     </script>

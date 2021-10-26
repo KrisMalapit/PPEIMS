@@ -23,7 +23,7 @@ namespace PPEIMS.Controllers
         [BreadCrumb(Title = "Index", Order = 1, IgnoreAjaxRequests = true)]
         public IActionResult Index()
         {
-            ViewData["PPEId"] = new SelectList(_context.PPEs.Where(a=>a.Status == "Active"), "Id", "Name");
+           
 
 
             this.SetCurrentBreadCrumbTitle("Item");
