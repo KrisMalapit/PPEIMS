@@ -27,7 +27,7 @@ namespace PPEIMS.Controllers
 
 
             this.SetCurrentBreadCrumbTitle("Item");
-
+            ViewData["PPEId"] = new SelectList(_context.PPEs.Where(a => a.Status == "Active"), "Id", "Name");
             return View();
         }
         

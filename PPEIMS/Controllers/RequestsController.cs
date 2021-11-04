@@ -163,7 +163,7 @@ namespace PPEIMS.Controllers
                 _context.Users.Where(e => e.Status == "1")
                 .Where(a => a.DepartmentId == deptId)
                 .Select(a => new {
-                    EmployeeName = a.LastName + ", " + a.FirstName,
+                    EmployeeName = a.Name,
                     a.Id,
                     IsExisting = _context.RequestDetailUsers.Where(b => b.RequestDetailId == RequestId)
                                 .Where(b => b.Status == "Active").Where(b => b.UserId == a.Id).Count() == 0 ? 0 : 1
