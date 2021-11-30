@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211111054703_20")]
+    partial class _20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -222,13 +224,9 @@ namespace PPEIMS.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateSubmitted");
-
                     b.Property<DateTime>("DepartmentApprovedDate");
 
                     b.Property<int>("DepartmentHeadId");
-
-                    b.Property<int>("DepartmentId");
 
                     b.Property<string>("DocumentStatus");
 
@@ -254,8 +252,6 @@ namespace PPEIMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Comments");
 
                     b.Property<DateTime>("CreatedDate");
 
@@ -348,8 +344,6 @@ namespace PPEIMS.Migrations
                     b.Property<string>("Name");
 
                     b.Property<string>("Password");
-
-                    b.Property<string>("RoleAccess");
 
                     b.Property<int>("RoleId");
 

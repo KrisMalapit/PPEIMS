@@ -22,7 +22,7 @@ namespace PPEIMS.Models
         public string Type { get; set; }
         public string Remarks { get; set; }
         public int QuantityIssued { get; set; }
-        
 
+        public string Comments { get; set; }
     }
 }

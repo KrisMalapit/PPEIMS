@@ -19,6 +19,7 @@ namespace PPEIMS.Controllers
         [BreadCrumb(Title = "Index", Order = 1, IgnoreAjaxRequests = true)]
         public IActionResult Index()
         {
+           
             this.SetCurrentBreadCrumbTitle("Request");
             return View();
         }
@@ -45,6 +46,33 @@ namespace PPEIMS.Controllers
         [HttpPost]
         public ActionResult getData()
         {
+            var roleName = User.Identity.GetRoleName();
+            string docstatus = "";
+            switch (roleName)
+            {
+                case "Admin":
+                    break;
+                case "User":
+                    docstatus = "Pending";
+                    break;
+                case "Dept Head":
+                    docstatus = "For Approval Dept Head";
+                    break;
+                case "Safety":
+                    docstatus = "For Approval Safety Head";
+                    break;
+                case "Warehouseman":
+                    docstatus = "For Approval Warehouseman";
+                    break;
+
+            }
+
+
+
+            
+
+
+
             string strFilter = "";
             try
             {
@@ -91,36 +119,70 @@ namespace PPEIMS.Controllers
                     strFilter = "true";
                 }
 
-
-
-                int recCount =
-
-                _context.Requests
-                .Where(a => a.Status == "Active")
-
-                .Where(strFilter)
-                .Count();
+                int recCount = 0;
+                if (roleName == "User")
+                {
+                    recCount =
+                    _context.Requests
+                        .Where(a=>a.CreatedByUserId == User.Identity.GetUserId())
+                        .Where(a => a.Status == "Active")
+                        .Where(strFilter)
+                        .Count();
+                }
+                else if (roleName == "Warehouseman")
+                {
+                    recCount =
+                    _context.Requests
+                        .Where(a => a.DocumentStatus == docstatus)
+                        .Where(a => a.Status == "Active")
+                        .Where(strFilter)
+                        .Count();
+                }
+                else
+                {
+                    recCount =
+                    _context.Requests
+                        .Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()))
+                        .Where(a => a.DocumentStatus == docstatus)
+                        .Where(a => a.Status == "Active")
+                        .Where(strFilter)
+                        .Count();
+                }
+                
 
                 recordsTotal = recCount;
                 int recFilter = recCount;
 
+                var m = _context.Requests
+                    
+                    .Where(a => a.Status == "Active")
+                    .Where(strFilter);
 
+                if (roleName == "User")
+                {
+                    m = m.Where(a => a.CreatedByUserId == User.Identity.GetUserId());
+                }
+                else if (roleName == "Warehouseman")
+                {
+                    m = m.Where(a => a.DocumentStatus == docstatus);
+                }
+                else
+                {
+                    m = m.Where(a => a.DocumentStatus == docstatus)
+                        .Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()));
+                }
 
-                var v =
-
-               _context.Requests
-              .Where(a => a.Status == "Active")
-              .Where(strFilter)
-              .Skip(skip).Take(pageSize)
-              .Select(a => new
-              {
-                  a.CreatedDate,
-                  a.ReferenceNo,
-                  a.CreatedBy,
-                  a.DocumentStatus,
-                  a.Id
+                    var v =
+                    m.Skip(skip).Take(pageSize)
+                      .Select(a => new
+                      {
+                          a.CreatedDate,
+                          a.ReferenceNo,
+                          a.CreatedBy,
+                          a.DocumentStatus,
+                          a.Id
                 
-              });
+                      });
 
 
 
@@ -245,6 +307,8 @@ namespace PPEIMS.Controllers
             string series = "";
             string refno = "";
             string refid = "0";
+            string newrefno = "";
+
             int reqId = fvm.Id;
 
             var items = fvm.no;
@@ -268,19 +332,27 @@ namespace PPEIMS.Controllers
                     {
                         ReferenceNo = refno,
                         CreatedBy = User.Identity.GetFullName(),
+                        CreatedByUserId = User.Identity.GetUserId(),
                         CreatedDate = DateTime.Now.Date,
                         DocumentStatus = "Pending",
-                        Status = "Active"
+                        Status = "Active",
+                        DepartmentId = Convert.ToInt32(User.Identity.GetDepartmentID())
                     };
 
                   
                     _context.Add(req);
                     _context.SaveChanges();
                     reqId = req.Id;
+                    
+
                     string x = new NoSeriesController(_context).UpdateNoSeries(series, series_code);
+
+
+                    
                 }
 
                 var d = _context.RequestDetails.Where(a => a.RequestId == fvm.Id).Count();
+             
                 if (d == 0)
                 {
                     for (int i = 0; i < fvm.qty.Length; i++)
@@ -300,6 +372,7 @@ namespace PPEIMS.Controllers
 
                     }
                     _context.SaveChanges();
+                   
                     status = "success";
 
 
@@ -354,6 +427,8 @@ namespace PPEIMS.Controllers
 
 
                 }
+
+              
             }
             catch (Exception ex)
             {
@@ -366,7 +441,8 @@ namespace PPEIMS.Controllers
             {
                 status,
                 message,
-                refid = reqId
+                refid = reqId,
+                refno
             };
             return Json(modelItem);
         }
@@ -404,9 +480,73 @@ namespace PPEIMS.Controllers
 
 
         }
+        public IActionResult submitRequest(int refid)
+        {
+            int inv = 0;
+            string status = "";
+            string message = "";
+
+
+            try
+            {
+                var req = _context.Requests.Find(refid);
+                string currentDocumentStatus = req.DocumentStatus;
+                string newDocumentStatus = "";
+                
+                switch (currentDocumentStatus)
+                {
+                    case "Pending":
+                        newDocumentStatus = "For Approval Dept Head";
+                        req.DateSubmitted = DateTime.Now;
+                       
+                        break;
+                    case "For Approval Dept Head":
+                        newDocumentStatus = "For Approval Safety Head";
+                        req.DepartmentApprovedDate = DateTime.Now;
+                        req.DepartmentHeadId = User.Identity.GetUserId();
+                        break;
+                    case "For Approval Safety Head":
+                        newDocumentStatus = "For Approval Warehouseman";
+                        req.SafetyApprovedDate = DateTime.Now;
+                        req.SafetyId =   User.Identity.GetUserId();
+                        break;
+                    case "For Approval Warehouseman":
+                        newDocumentStatus = "Approved";
+                        req.WarehouseApprovedDate = DateTime.Now;
+                        req.WarehousemanId = User.Identity.GetUserId();
+                        break;
+                }
+
+                req.DocumentStatus = newDocumentStatus;
+                _context.Update(req);
+                _context.SaveChanges();
+
+
+                status = "success";
+
+            }
+            catch (Exception e)
+            {
+                status = "fail";
+                message = e.Message;
+            }
+
+
+            var model = new
+            {
+                status,
+                message
+            };
+            return Json(model);
+
+
+
+        }
         public IActionResult getDataDetails(int id)
         {
             string strFilter = "";
+            string refno = "";
+
             try
             {
 
@@ -426,6 +566,7 @@ namespace PPEIMS.Controllers
                  
                   a.Id
                   ,a.QuantityIssued
+                  ,a.Requests.ReferenceNo
 
               });
 
@@ -433,6 +574,7 @@ namespace PPEIMS.Controllers
                 var model = new
                 {
                     data = v.ToList()
+                   
                 };
 
 
@@ -469,7 +611,10 @@ namespace PPEIMS.Controllers
                             .Sum(b => b.Quantity),
 
                   a.QuantityIssued,
-                  a.Id
+                  a.Id,
+                  a.Requests.ReferenceNo
+                  ,a.Requests.DocumentStatus
+                  ,a.Comments
 
               });
 
@@ -579,7 +724,7 @@ namespace PPEIMS.Controllers
             };
             return Json(model);
         }
-        public JsonResult saveQtyIssued(int id,int qty)
+        public JsonResult saveQtyIssued(int id,int qty,string type,string comment)
         {
             string message = "";
             string status = "";
@@ -588,12 +733,16 @@ namespace PPEIMS.Controllers
             try
             {
                 var req = _context.RequestDetails.Find(id);
-                //var emp = _context.Employees.Find(att.EmployeeId);
-                //string empno = emp.EmployeeNo;
-                //string empname = emp.LastName + ", " + emp.FirstName;
-                //string attdate = att.CreatedDate.Date.ToString("MM/dd/yyyy");
+                if (type == "qtyissued")
+                {
+                    req.QuantityIssued = qty;
+                }
+                else
+                {
+                    req.Comments = comment;
+                }
+                
 
-                req.QuantityIssued = qty;
                 _context.Update(req);
                 _context.SaveChanges();
 
@@ -627,5 +776,6 @@ namespace PPEIMS.Controllers
 
             return Json(model);
         }
+        
     }
 }

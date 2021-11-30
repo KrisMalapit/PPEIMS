@@ -15,5 +15,18 @@ namespace PPEIMS.Models
         public string CreatedBy { get; set; }
         public string DocumentStatus { get; set; }
         public string Status { get; set; }
+
+
+        public DateTime DateSubmitted { get; set; }
+        public int CreatedByUserId { get; set; }
+        public int DepartmentHeadId { get; set; }
+        public DateTime DepartmentApprovedDate { get; set; }
+        public int SafetyId { get; set; }
+        public DateTime SafetyApprovedDate { get; set; }
+        public int WarehousemanId { get; set; }
+        public DateTime WarehouseApprovedDate { get; set; }
+        public int DepartmentId { get; set; }
+      
+       
     }
 }

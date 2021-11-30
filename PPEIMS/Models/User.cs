@@ -39,6 +39,7 @@ namespace PPEIMS.Models
         public virtual Department Departments { get; set; }
 
         public string Category { get; set; } // Office-Field
-      
+        public string RoleAccess { get; set; }
+
     }
 }

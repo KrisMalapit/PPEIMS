@@ -33,7 +33,9 @@
     .modal-md {
         width: 60% !important
     }
-
+    .modal-lg {
+        width: 80% !important
+    }
     .modal-dialog {
         max-width: 100%;
         margin: 1.75rem auto;
@@ -122,6 +124,8 @@
                                 <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>
                             </td>
                         </script>
+                        <div class="row col-md-12"><h3>Request No :</h3><h3 style="padding-left:10px;" id="reqNo1">0</h3></div>
+                        &nbsp;
                         <table class="table table-bordered table-hover" id="tblItem">
                             <thead>
                                 <tr>
@@ -154,16 +158,32 @@
         <button data-dismiss="modal" class="btn btn-default">Close</button>*@
 
                 <p>
-                    <a href="#" onclick="saveItem();">
-                        <i class="fa fa-check"></i>
-                        <span class="email-text">&nbsp;Save</span>
-                    </a>
-                    <text> |&nbsp; </text>
+                    @*<div class="row col-md-12">
+                        <div class="divApproved">*@
+                            <a href="#" onclick="saveItem();">
+                                <i class="fa fa-check"></i>
+                                <span class="email-text">&nbsp;Save</span>
+                            </a>
+
+                            <text> |&nbsp; </text>
+                            <a href="#" onclick="submitItem();">
+                                <i class="fa fa-check-square"></i>
+                                <span class="email-text">&nbsp;Submit</span>
+                            </a>
+
+                            <text> |&nbsp; </text>
+                        @*</div>
+                        <div>*@
+                            <a href="#" data-dismiss="modal">
+                                <i class="fa fa-window-close"></i>
+                                <span class="email-text">&nbsp;Close</span>
+                            </a>
+                        @*</div>*@
+                    </div>
                    
-                    <a href="#" data-dismiss="modal">
-                        <i class="fa fa-check-square"></i>
-                        <span class="email-text">&nbsp;Close</span>
-                    </a>
+
+
+                        
                 </p>
 
             </div>
@@ -173,7 +193,7 @@
 
 
 <div class="modal inmodal in " id="modalView" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content animated fadeIn">
             <div class="modal-header">
                 <h4 class="modal-title" id="modalSnapTitle">Transaction Details </h4>
@@ -183,6 +203,9 @@
                 <input id="SubDetailId" type="hidden" />
                 <input id="TotalQty" type="hidden" />
                 <div class="form-group ">
+                    
+                    <div class="row col-md-12"><h3>Request No :</h3><h3 style="padding-left:10px;" id="reqNo">0</h3></div>
+                    &nbsp;
                     <form id="frm">
                         <table id="tableID" class="display table table-no-bordered dataTable"
                                style="width:100%">
@@ -190,13 +213,13 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th width="35%">Item</th>
-                                    <th width="5%">Qty to Request</th>
-                                    <th width="5%">Qty Issued</th>
-                                    <th width="10%">Inventory</th>
-                                    <th width="15%">Type</th>
-                                    <th width="20%">Remarks</th>
-
+                                    <th>Item</th>
+                                    <th>Qty to Request</th>
+                                    <th>Qty Issued</th>
+                                    <th>Inventory</th>
+                                    <th>Type</th>
+                                    <th>Remarks</th>
+                                    <th>Comment</th>
                                 </tr>
                             </thead>
 
@@ -205,20 +228,33 @@
 
 
                 </div>
-                @*<button id="btnSaveEmployee" onclick="approve();" class="btn btn-success">Approve</button>
-                <button data-dismiss="modal" class="btn btn-default">Close</button>*@
+
                 <p>
 
-                    <a href="#" onclick="saveFireData();">
-                        <i class="fa fa-check"></i>
-                        <span class="email-text">&nbsp;Approve</span>
-                    </a>
+                    <div class="row col-md-12">
+                        <div class="divApproved">
+                            <a href="#" onclick="submitItem();">
+                                <i class="fa fa-check"></i>
+                                <span class="email-text">&nbsp;Approve</span>
+                            </a>
+                            <text> |&nbsp; </text>
+                            <a href="#" onclick="disapproved();">
+                                <i class="fa fa-crosshairs"></i>
+                                <span class="save">&nbsp;Disapproved</span>
+                            </a>
+                            <text> |&nbsp; </text>
+                        </div>
+                        <div>
+                            <a href="#" data-dismiss="modal">
+                                <i class="fa fa-check-square"></i>
+                                <span class="save">&nbsp;Close</span>
+                            </a>
+                        </div>
+                    </div>
 
-                    <text> |&nbsp; </text>
-                    <a  href="#" data-dismiss="modal">
-                        <i class="fa fa-check-square"></i>
-                        <span class="save">&nbsp;Close</span>
-                    </a>
+
+                   
+                  
 
 
 
@@ -378,8 +414,22 @@
             createdRow: function (row, data, dataIndex) {
                 $(row).find('td:eq(0)').attr('data-id', data['id']);
                 $(row).find('.inpissued').attr('data-id', data['id']);
+                if (data['documentStatus']==='Approved') {
+                    $(row).find('.inpissued').attr('disabled','true');
+                }
                 $(row).find('.inpissued').attr('value', data['quantityIssued']);
             },
+           
+                "columnDefs": [
+                    { "width": "30%", "targets": 1 },
+                    { "width": "5%", "targets": 2 },
+                    { "width": "5%", "targets": 3 },
+                    { "width": "5%", "targets": 4 },
+                    { "width": "5%", "targets": 5 },
+                    { "width": "20%", "targets": 6 },
+                    { "width": "30%", "targets": 7 }
+                ]
+            ,
             "columns": [{
                 "className": 'details-control',
                 "orderable": true,
@@ -388,10 +438,18 @@
             },
                 { "data": "itemName" },
                 { "data": "quantity" },
-                { "data": undefined, "defaultContent": "<input onkeypress='return isNumberKey(event)' onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpissued' style='direction:rtl;' data-type='qtyissued'>" },
+                { "data": undefined, "defaultContent": "<input onkeypress='return isNumberKey(event)' onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpissued' style='direction:rtl;width:100%' data-type='qtyissued'>" },
                 { "data": "inventory" },
                 { "data": "type" },
                 { "data": "remarks" },
+                //{ "data": undefined, "defaultContent": "<input onkeypress='return isNumberKey(event)' onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpcomment' style='direction:rtl;width:100%' data-type='comments'>" }
+                {
+                    data: "comments",
+                    name: "Comments",
+                    render: function (data, type, row) {
+                        return "<input onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpcomment' style='direction:ltr;width:100%' data-type='comments' data-id='" + row['id'] +"' value='"+data+"'>";
+                    }
+                },
             ],
            
             "order": [[1, 'asc']]
@@ -673,7 +731,7 @@ $(document).ready(function () {
 
                 cache: false
         },
-        minimumInputLength: 4,
+        minimumInputLength: 2,
         });
 
 
@@ -770,10 +828,6 @@ $(document).ready(function () {
     function saveItem() {
         var cnt = 0;
         var cntInv = 0;
-
-
-
-
         $('#frmItem').find('input').each(function () {
             if ($(this).prop('required')) {
                 if (!$(this).val()) {
@@ -836,9 +890,40 @@ $(document).ready(function () {
              , success: function (responsedata) {
                 if (responsedata.status == "success") {
                     toastr["success"]("Form saved!", "<b>Success</b> ")
+                    console.log(responsedata);
                     $("#DetailId").val(responsedata.refid);
+                    document.getElementById('reqNo1').innerHTML = responsedata.refno; 
+                   
                     loadDatatable();
                     reloadtable(responsedata.refid);
+
+                } else {
+                    toastr["error"](responsedata.message)
+                    toastr.options = {
+                        "closeButton": true
+                    }
+                }
+            }
+        })
+
+
+    }
+    function submitItem() {
+        if (!confirm("Do you want to submit this document for approving?")) {
+            return false;
+        }
+      
+        $.ajax({
+            url: "@Url.Action("submitRequest")"
+            , method: "POST"
+            , data: { refid: $("#DetailId").val() }
+            , dataType: 'json'
+             , success: function (responsedata) {
+                if (responsedata.status == "success") {
+                    toastr["success"]("Form submitted!", "<b>Success</b> ")
+                  
+                    loadDatatable();
+                   
 
                 } else {
                     toastr["error"](responsedata.message)
@@ -904,12 +989,21 @@ $(document).ready(function () {
                 {
 
                     render: function (data, type, row) {
+                        $actions = "";
+                        if (row.documentStatus == "Approved") {
+                            
+                            $actions = "<a title='View' data-docstat='" + row.documentStatus +
+                            "' data-ref=" + row.referenceNo + " data-id=" + row.id + " onclick='showmodalView(this);'>View</a>";
 
+                        } else {
+                            $actions =
+                                "<a title='Edit' data-docstat='" + row.documentStatus + "' data-ref=" + row.referenceNo + " data-id=" + row.id + " onclick='showmodal(this);'>Edit</a>&nbsp;";
+                            $actions = '@User.Identity.GetRoleName()' == 'User' ? $actions += '' : "<a title='View' data-docstat='" + row.documentStatus +
+                            "' data-ref=" + row.referenceNo + " data-id=" + row.id + " onclick='showmodalView(this);'>View</a>";
 
-                        $actions =
-                            "<a title='Edit' data-id=" + row.id + " onclick='showmodal(this);'>Edit</a>&nbsp;" +
-                            "<a title='View' data-id=" + row.id + " onclick='showmodalView(this);'>View</a>";
+                        }
 
+                       
                         return $actions;
                     }
                 }
@@ -956,7 +1050,7 @@ $(document).ready(function () {
     function createRequest() {
 
         $('#DetailId').val(0);
-
+        document.getElementById('reqNo1').innerHTML = "0";
         if ($('#tblItem tr').length > 2) {
             $('#p_Item > tr').remove();
             $trr =
@@ -980,17 +1074,50 @@ $(document).ready(function () {
     }
     function showmodal(obj) {
         $id = $(obj).attr('data-id');
+        $ref = $(obj).attr('data-ref');
+       
+
+        
+
+        if (typeof $ref == 'undefined') {
+            
+        } else {
+            document.getElementById('reqNo1').innerHTML = $(obj).attr('data-ref');
+        }
+        
+      
+        
         $("#DetailId").val($id);
 
         $('#modalEmployee').modal('hide');
         $('#modalItem').modal('show');
         reloadtable($id);
+
+
+         
+
+
+
     }
     function showmodalView(obj) {
+       
         $id = $(obj).attr('data-id');
-
+        document.getElementById('reqNo').innerHTML = $(obj).attr('data-ref');
+        $("#DetailId").val($id);
         loadDatatableView($id);
         $('#modalView').modal('show');
+
+
+        $stat = $(obj).attr('data-docstat')
+        if ($stat == "Approved") {
+            
+            $('.divApproved').hide()
+           
+            
+        } else {
+            $('.divApproved').show()
+
+        }
     }
     function showmodaldetail(obj) {
         console.log(obj);
@@ -1017,10 +1144,11 @@ $(document).ready(function () {
             , data: { id: _id }
             , async: false
             , success: function (responsedata) {
-
+                //console.log(responsedata);
                 var $trr = '';
                 $('#p_Item > tr').remove();
                 if (responsedata.data.length > 0) {
+                    //document.getElementById('reqNo1').innerHTML = responsedata.data.referenceNo; 
                     $lastnum = 1;
 
                     for (var i = 0; i < responsedata.data.length; i++) {
@@ -1087,7 +1215,7 @@ $(document).ready(function () {
                                 cache: false
                             },
 
-                            minimumInputLength: 4,
+                            minimumInputLength: 2,
 
                         }).val(responsedata.data[i].itemId).trigger('change');
 
@@ -1109,7 +1237,7 @@ $(document).ready(function () {
 
 
                 } else {
-
+                    document.getElementById('reqNo1').innerHTML = "0";
                     //var i = $('#p_Item tr').length + 1;
 
                     //var x =
@@ -1140,8 +1268,8 @@ $(document).ready(function () {
     }
     function saveChanges(x) {
 
-            //var xxxx = parseFloat($(x).val()).toFixed(2);
-            //$(x).val(xxxx);
+       
+
 
             if ($(x).attr('value') == $(x).val()) {
                 return false;
@@ -1168,7 +1296,7 @@ $(document).ready(function () {
             $.ajax({
                 url: "@Url.Action("saveQtyIssued")"
                 , method: "POST"
-                , data: { id: $(x).attr('data-id'), qty: $(x).val()}
+                , data: { id: $(x).attr('data-id'), qty: $(x).val(), type: $(x).attr('data-type'), comment: $(x).val()}
                 , dataType: 'json'
                 , success: function (responsedata) {
                         if (responsedata.status == "success") {
@@ -1202,7 +1330,9 @@ $(document).ready(function () {
             , data: { id: _id }
             , async: false
             , success: function (responsedata) {
-
+                //console.log(responsedata);
+                document.getElementById('reqNo1').innerHTML = responsedata.data[0].referenceNo; 
+                //document.getElementById('reqNo1').innerHTML = "dasdasd";
                 var $trr = '';
                 $('#p_Item > tr').remove();
                 if (responsedata.data.length > 0) {
@@ -1272,7 +1402,7 @@ $(document).ready(function () {
                                 cache: false
                             },
 
-                            minimumInputLength: 4,
+                            minimumInputLength: 2,
 
                         }).val(responsedata.data[i].itemId).trigger('change');
 
