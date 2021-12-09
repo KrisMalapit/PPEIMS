@@ -48,12 +48,19 @@ namespace PPEIMS.Controllers
         {
             var roleName = User.Identity.GetRoleName();
             string docstatus = "";
+            string compaccess = User.Identity.GetCompanyAccess();
+            int[] _compaccess = compaccess.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+
             switch (roleName)
             {
                 case "Admin":
                     break;
                 case "User":
-                    docstatus = "Pending";
+
+                    //docstatus = "Pending";
+                   
+                    //string[] stat = status.Split(',').Select(n => n).ToArray();
+
                     break;
                 case "Dept Head":
                     docstatus = "For Approval Dept Head";
@@ -120,6 +127,7 @@ namespace PPEIMS.Controllers
                 }
 
                 int recCount = 0;
+
                 if (roleName == "User")
                 {
                     recCount =
@@ -133,7 +141,16 @@ namespace PPEIMS.Controllers
                 {
                     recCount =
                     _context.Requests
-                        .Where(a => a.DocumentStatus == docstatus)
+                        .Where(a=> _compaccess.Contains(a.Departments.CompanyId))
+                        .Where(a => a.Status == "Active")
+                        .Where(strFilter)
+                        .Count();
+                }
+                else if (roleName == "Admin")
+                {
+                    recCount =
+                    _context.Requests
+                       
                         .Where(a => a.Status == "Active")
                         .Where(strFilter)
                         .Count();
@@ -164,7 +181,13 @@ namespace PPEIMS.Controllers
                 }
                 else if (roleName == "Warehouseman")
                 {
-                    m = m.Where(a => a.DocumentStatus == docstatus);
+                    m = m
+                         .Where(a => _compaccess.Contains(a.Departments.CompanyId))
+                        .Where(a => a.DocumentStatus == docstatus);
+                }
+                else if (roleName == "Admin")
+                {
+                    m = m.Where(a => a.DocumentStatus != "0");
                 }
                 else
                 {
@@ -494,8 +517,9 @@ namespace PPEIMS.Controllers
                 string newDocumentStatus = "";
                 
                 switch (currentDocumentStatus)
-                {
+                { 
                     case "Pending":
+                    case "Return to Requestor":
                         newDocumentStatus = "For Approval Dept Head";
                         req.DateSubmitted = DateTime.Now;
                        
@@ -508,7 +532,7 @@ namespace PPEIMS.Controllers
                     case "For Approval Safety Head":
                         newDocumentStatus = "For Approval Warehouseman";
                         req.SafetyApprovedDate = DateTime.Now;
-                        req.SafetyId =   User.Identity.GetUserId();
+                        req.SafetyId = User.Identity.GetUserId();
                         break;
                     case "For Approval Warehouseman":
                         newDocumentStatus = "Approved";
@@ -523,6 +547,88 @@ namespace PPEIMS.Controllers
 
 
                 status = "success";
+
+                Log log = new Log
+                {
+                    Descriptions = "Update Record ID:" + refid + ". Set [Status] equals to " + newDocumentStatus + " from " + currentDocumentStatus,
+                    UserId = User.Identity.GetUserName(),
+                    Status = status
+                };
+                _context.Add(log);
+                _context.SaveChanges();
+
+
+            }
+            catch (Exception e)
+            {
+                status = "fail";
+                message = e.Message;
+            }
+
+
+            var model = new
+            {
+                status,
+                message
+            };
+            return Json(model);
+
+
+
+        }
+        public IActionResult disapproveRequest(int refid)
+        {
+            int inv = 0;
+            string status = "";
+            string message = "";
+
+
+            try
+            {
+                var req = _context.Requests.Find(refid);
+                string currentDocumentStatus = req.DocumentStatus;
+                //string newDocumentStatus = "";
+
+                //switch (currentDocumentStatus)
+                //{
+                //    case "Pending":
+                //        newDocumentStatus = "For Approval Dept Head";
+                //        req.DateSubmitted = DateTime.Now;
+
+                //        break;
+                //    case "For Approval Dept Head":
+                //        newDocumentStatus = "For Approval Safety Head";
+                //        req.DepartmentApprovedDate = DateTime.Now;
+                //        req.DepartmentHeadId = User.Identity.GetUserId();
+                //        break;
+                //    case "For Approval Safety Head":
+                //        newDocumentStatus = "For Approval Warehouseman";
+                //        req.SafetyApprovedDate = DateTime.Now;
+                //        req.SafetyId = User.Identity.GetUserId();
+                //        break;
+                //    case "For Approval Warehouseman":
+                //        newDocumentStatus = "Approved";
+                //        req.WarehouseApprovedDate = DateTime.Now;
+                //        req.WarehousemanId = User.Identity.GetUserId();
+                //        break;
+                //}
+
+                req.DocumentStatus = "Return to Requestor";
+                _context.Update(req);
+                _context.SaveChanges();
+
+
+                status = "success";
+
+                Log log = new Log
+                {
+                    Descriptions = "Update Record. ID:" + refid + ". Set [Status] equals to Return to Requestor from " + currentDocumentStatus,
+                    UserId = User.Identity.GetUserName(),
+                    Status = status
+                };
+                _context.Add(log);
+                _context.SaveChanges();
+
 
             }
             catch (Exception e)
@@ -567,6 +673,7 @@ namespace PPEIMS.Controllers
                   a.Id
                   ,a.QuantityIssued
                   ,a.Requests.ReferenceNo
+                  ,a.Comments
 
               });
 

@@ -24,6 +24,12 @@
         .inpissued:focus {
             background-color: yellow;
         }
+    .toast-middle-center {
+        top: 25%;
+        margin: 0 auto;
+        left: 40%;
+      
+    }
 </style>
 <style>
     .error-input {
@@ -88,7 +94,7 @@
 
 
 <div class="modal inmodal in " id="modalItem" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content animated fadeIn">
             <div class="modal-header">
                 <h4 class="modal-title" id="modalSnapTitle">Item Information</h4>
@@ -135,6 +141,7 @@
                                     <th width="10%">Inventory</th>
                                     <th width="15%">Type</th>
                                     <th width="20%">Remarks</th>
+
                                     <th width="10%">Actions</th>
                                 </tr>
                             </thead>
@@ -447,7 +454,8 @@
                     data: "comments",
                     name: "Comments",
                     render: function (data, type, row) {
-                        return "<input onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpcomment' style='direction:ltr;width:100%' data-type='comments' data-id='" + row['id'] +"' value='"+data+"'>";
+                        $comment = data==null ? "" : data;
+                        return "<input onBlur='saveChanges(this)' onfocus='this.select();' onmouseup='return false;' class='inpcomment' style='direction:ltr;width:100%' data-type='comments' data-id='" + row['id'] + "' value='" + $comment+"'>";
                     }
                 },
             ],
@@ -877,11 +885,6 @@ $(document).ready(function () {
 
         var data = $("#frmItem").serializeArray();
 
-
-
-
-
-
         $.ajax({
             url: "@Url.Action("saveRequest")"
             , method: "POST"
@@ -896,6 +899,34 @@ $(document).ready(function () {
                    
                     loadDatatable();
                     reloadtable(responsedata.refid);
+
+                } else {
+                    toastr["error"](responsedata.message)
+                    toastr.options = {
+                        "closeButton": true
+                    }
+                }
+            }
+        })
+
+
+    }
+    function disapproved() {
+        if (!confirm("This document will be tag as disapproved. Continue?")) {
+            return false;
+        }
+      
+        $.ajax({
+            url: "@Url.Action("disapproveRequest")"
+            , method: "POST"
+            , data: { refid: $("#DetailId").val() }
+            , dataType: 'json'
+             , success: function (responsedata) {
+                if (responsedata.status == "success") {
+                    toastr["success"]("Form submitted!", "<b>Success</b> ")
+                  
+                    loadDatatable();
+                   
 
                 } else {
                     toastr["error"](responsedata.message)
@@ -1119,6 +1150,23 @@ $(document).ready(function () {
 
         }
     }
+    
+    function showcomment(obj) {
+        //console.log(obj);
+        $comment = $(obj).attr('data-comment');
+        $item = $(obj).attr('data-item');
+        //toastr["warning"]($comment, "<b>Comment</b> ")
+        toastr.options = {
+            timeOut: 0,
+            extendedTimeOut: 0,
+            "closeButton": true
+            , "positionClass": "toast-middle-center"
+
+        };
+        toastr.warning($comment, "<b>Comment for '" + $item + "' </b> ")
+        
+        //alert($comment);
+    }
     function showmodaldetail(obj) {
         console.log(obj);
         $id = $(obj).attr('data-id');
@@ -1136,7 +1184,7 @@ $(document).ready(function () {
 
     }
     function reloadtableView(_id) {
-
+        console.log('aa');
         $.ajax({
             url: "@Url.Action("getDataDetails")"
             , method: "POST"
@@ -1174,14 +1222,17 @@ $(document).ready(function () {
                             '</select></td>' +
                         '<td  width="20%"><input ' + $req + ' class="remarks form-control" type="text" placeholder="Remarks" name="remarks[]"  value="' + $rem + '"/></td>'
 
-                        $tdCtr =
-                            //'<td>' +
-                            //"<button data-id=" + responsedata.data[i].id + " onclick='showmodaldetail(this);' class='detITEM btn btn-primary' type='button'><i class='glyphicon glyphicon-th-list'></i></button>&nbsp;" +
-                            //'<button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>' +
-                            //'</td>'
 
-                            '<td><a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
-                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
+                        var $act = '<a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
+                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>';
+                        
+                        $act += responsedata.data[i].comments ? "<a title='Comments' data-item='" + responsedata.data[i].itemName + "' data-comment='" + responsedata.data[i].comments + "'  class='btn btn-warning btn-bitbucket comItem' onclick='showcomment(this);' href='#'><i class='fa fa-comments'></i></a>" : "";
+
+
+
+                        $tdCtr =
+                            
+                            '<td>' + $act +
                             '</td>'
 
                         $trr = $trr + $tdCtr;
@@ -1322,7 +1373,7 @@ $(document).ready(function () {
         return true;
     }
     function reloadtable(_id) {
-
+        console.log('dd');
         $.ajax({
             url: "@Url.Action("getDataDetails")"
             , method: "POST"
@@ -1331,13 +1382,13 @@ $(document).ready(function () {
             , async: false
             , success: function (responsedata) {
                 //console.log(responsedata);
-                document.getElementById('reqNo1').innerHTML = responsedata.data[0].referenceNo; 
+                
                 //document.getElementById('reqNo1').innerHTML = "dasdasd";
                 var $trr = '';
                 $('#p_Item > tr').remove();
                 if (responsedata.data.length > 0) {
                     $lastnum = 1;
-
+                    document.getElementById('reqNo1').innerHTML = responsedata.data[0].referenceNo;
                     for (var i = 0; i < responsedata.data.length; i++) {
                         $req = '';
                         $rem = '';
@@ -1361,15 +1412,25 @@ $(document).ready(function () {
                             '</select></td>' +
                         '<td  width="20%"><input ' + $req + ' class="remarks form-control" type="text" placeholder="Remarks" name="remarks[]"  value="' + $rem + '"/></td>'
 
-                        $tdCtr =
-                            //'<td>' +
-                            //"<button data-id=" + responsedata.data[i].id + " onclick='showmodaldetail(this);' class='detITEM btn btn-primary' type='button'><i class='glyphicon glyphicon-th-list'></i></button>&nbsp;" +
-                            //'<button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>' +
-                            //'</td>'
+                        //$tdCtr =
+                           
 
-                            '<td><a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
-                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
+                        //    '<td><a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
+                        //    '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
+                        //    '</td>'
+
+                       
+                        var $act = '<a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
+                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>';
+
+                        $act += responsedata.data[i].comments ? "&nbsp;<a title='Comments' data-item='" + responsedata.data[i].itemName + "' data-comment='" + responsedata.data[i].comments + "' class='btn btn-warning btn-bitbucket comItem' onclick='showcomment(this);' href='#'><i class='fa fa-comments'></i></a>" : "";
+
+
+                        $tdCtr =
+
+                            '<td>' + $act +
                             '</td>'
+
 
                         $trr = $trr + $tdCtr;
                         var $tr = $('<tr>').append($trr);

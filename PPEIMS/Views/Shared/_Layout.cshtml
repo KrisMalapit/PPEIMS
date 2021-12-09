@@ -100,8 +100,8 @@
 
                                 </ul>
                             </li>
-                            @*@if (User.Identity.GetRoleName() != "User")
-        {*@
+                            @if (User.Identity.GetRoleName() == "Admin")
+        {
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Maintenance</a>
                                 <ul role="menu" class="dropdown-menu">
@@ -118,7 +118,7 @@
                                     Reports
                                 </a>
                             </li>
-                            @* } *@
+                            } 
 
                         </ul>
                         <ul class="nav navbar-top-links navbar-right">
