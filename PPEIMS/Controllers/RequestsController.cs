@@ -171,7 +171,6 @@ namespace PPEIMS.Controllers
                 int recFilter = recCount;
 
                 var m = _context.Requests
-                    
                     .Where(a => a.Status == "Active")
                     .Where(strFilter);
 
@@ -195,7 +194,7 @@ namespace PPEIMS.Controllers
                         .Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()));
                 }
 
-                    var v =
+                var v =
                     m.Skip(skip).Take(pageSize)
                       .Select(a => new
                       {
