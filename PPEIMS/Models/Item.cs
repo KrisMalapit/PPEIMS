@@ -21,6 +21,8 @@ namespace PPEIMS.Models
         public int ? PPEId { get; set; }
         public virtual PPE PPEs { get; set; }
         public string Status { get; set; } = "Active";
-      
+        public int CompanyId { get; set; }
+        //public virtual Company Companies{ get; set; }
+
     }
 }

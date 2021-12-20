@@ -16,5 +16,6 @@ namespace PPEIMS.Models
         public virtual User Users { get; set; }
         public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
+        public int DocumentStatus { get; set; }
     }
 }

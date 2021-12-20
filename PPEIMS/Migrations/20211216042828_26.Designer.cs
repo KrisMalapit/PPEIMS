@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPEIMS.Models;
 
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    partial class PPEIMSContextModelSnapshot : ModelSnapshot
+    [Migration("20211216042828_26")]
+    partial class _26
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,8 +102,6 @@ namespace PPEIMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CompanyId");
 
                     b.Property<string>("Description")
                         .IsRequired();
@@ -293,8 +293,6 @@ namespace PPEIMS.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedDate");
-
-                    b.Property<int>("DocumentStatus");
 
                     b.Property<int>("RequestDetailId");
 

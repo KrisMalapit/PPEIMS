@@ -64,6 +64,8 @@
             <div class="modal-body">
                 <input id="SubDetailId" type="hidden" />
                 <input id="TotalQty" type="hidden" />
+                <h3 id="itemName"></h3>
+                <br />
                 <div class="form-group ">
                     <form id="frm">
                         <table id="tblEmployee" class="table table-striped table-no-bordered table-hover dataTable" style="width: 100%!important">
@@ -73,6 +75,8 @@
                                     <th>Name </th>
                                     <th>User Id </th>
                                     <th>Existing </th>
+                                    <th>Issued Date</th>
+                                    <th>Expiration Date</th>
                                 </tr>
                             </thead>
                         </table>
@@ -422,7 +426,9 @@
                 $(row).find('td:eq(0)').attr('data-id', data['id']);
                 $(row).find('.inpissued').attr('data-id', data['id']);
                 if (data['documentStatus']==='Approved') {
-                    $(row).find('.inpissued').attr('disabled','true');
+                    $(row).find('.inpissued').attr('disabled', 'true');
+                    $(row).find('.inpcomment').attr('disabled', 'true');
+                    
                 }
                 $(row).find('.inpissued').attr('value', data['quantityIssued']);
             },
@@ -1170,14 +1176,16 @@ $(document).ready(function () {
     function showmodaldetail(obj) {
         console.log(obj);
         $id = $(obj).attr('data-id');
+        $itemid = $(obj).attr('data-item');
         $('#SubDetailId').val($id);
         $('#btnSubDetailId').attr('data-id', $("#DetailId").val());
         $('#modalItem').modal('hide');
 
         $totalqty = $(obj).closest('tr').find('input').val();
-        loadEmployees($id);
+        loadEmployees($id, $itemid);
         $('#TotalQty').val($totalqty);
-
+        $('#itemName').html("Item Name : " + $(obj).attr('data-itemname'));
+        
         $('#modalEmployee').modal('show');
 
 
@@ -1223,8 +1231,8 @@ $(document).ready(function () {
                         '<td  width="20%"><input ' + $req + ' class="remarks form-control" type="text" placeholder="Remarks" name="remarks[]"  value="' + $rem + '"/></td>'
 
 
-                        var $act = '<a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
-                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>';
+                        var $act = "<a title='Details' data-itemname='" + responsedata.data[i].itemName + "' data-item=" + responsedata.data[i].itemId + " data-id=" + responsedata.data[i].id + " class='btn btn-info btn-bitbucket' onclick='showmodaldetail(this);' href='#'><i class='fa fa-list'></i></a>&nbsp;" +
+                            "<a title='Delete' class='btn btn-danger btn-bitbucket remITEM' href='#'><i class='fa fa-remove'></i></a>";
                         
                         $act += responsedata.data[i].comments ? "<a title='Comments' data-item='" + responsedata.data[i].itemName + "' data-comment='" + responsedata.data[i].comments + "'  class='btn btn-warning btn-bitbucket comItem' onclick='showcomment(this);' href='#'><i class='fa fa-comments'></i></a>" : "";
 
@@ -1412,16 +1420,10 @@ $(document).ready(function () {
                             '</select></td>' +
                         '<td  width="20%"><input ' + $req + ' class="remarks form-control" type="text" placeholder="Remarks" name="remarks[]"  value="' + $rem + '"/></td>'
 
-                        //$tdCtr =
-                           
-
-                        //    '<td><a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
-                        //    '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
-                        //    '</td>'
-
                        
-                        var $act = '<a title="Details" data-id=' + responsedata.data[i].id + ' class="btn btn-info btn-bitbucket" onclick="showmodaldetail(this);" href="#"><i class="fa fa-list"></i></a>&nbsp;' +
-                            '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>';
+                       
+                        var $act = "<a title='Details' data-itemname='" + responsedata.data[i].itemName + "' data-item=" + responsedata.data[i].itemId + " data-id=" + responsedata.data[i].id + " class='btn btn-info btn-bitbucket' onclick='showmodaldetail(this);' href='#'><i class='fa fa-list'></i></a>&nbsp;" +
+                            "<a title='Delete' class='btn btn-danger btn-bitbucket remITEM' href='#'><i class='fa fa-remove'></i></a>";
 
                         $act += responsedata.data[i].comments ? "&nbsp;<a title='Comments' data-item='" + responsedata.data[i].itemName + "' data-comment='" + responsedata.data[i].comments + "' class='btn btn-warning btn-bitbucket comItem' onclick='showcomment(this);' href='#'><i class='fa fa-comments'></i></a>" : "";
 
@@ -1514,7 +1516,7 @@ $(document).ready(function () {
             }
         })
     }
-    function loadEmployees(id) {
+    function loadEmployees(id,itemid) {
 
        var data = [];
 
@@ -1522,7 +1524,7 @@ $(document).ready(function () {
                         url: "@Url.Action("getEmployees", "Requests")"
                             , method: "POST"
                             , dataType: 'json'
-                            , data: { RequestId: id}
+                            , data: { RequestId: id,itemid : itemid}
                             , success: function (responsedata) {
                                 console.log(responsedata);
                                 if (responsedata.status == "success") {
@@ -1531,6 +1533,13 @@ $(document).ready(function () {
 
                                         var $id = responsedata.data[i].id;
 
+                                        $issuedDate = moment(responsedata.data[i].issuedDate).format("MM/DD/YYYY") == "01/01/1900" ? "" : moment(responsedata.data[i].issuedDate).format("MM/DD/YYYY");
+                                        $expirationDate = ""
+                                        if ($issuedDate!= "") {
+                                            var dt = new Date(responsedata.data[i].issuedDate);
+                                            dt.setMonth(dt.getMonth() + responsedata.data[i].months);
+                                            $expirationDate =  moment(dt).format("MM/DD/YYYY")
+                                        } 
 
                                         $actions =
                                             //'<a title="Edit" class="btn btn-white btn-bitbucket" href="' + linkEdit + '"><i class="fa fa-wrench"></i></a> ' +
@@ -1541,6 +1550,10 @@ $(document).ready(function () {
                                             responsedata.data[i].employeeName,
                                             responsedata.data[i].id,
                                             responsedata.data[i].isExisting,
+                                            $issuedDate ,
+                                            
+                                            $expirationDate
+
                                             ]
                                         );
 

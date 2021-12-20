@@ -79,17 +79,23 @@
         <div id="page-wrapper" class="gray-bg">
             <div class="row border-bottom white-bg">
                 <nav class="navbar navbar-expand-lg navbar-static-top" role="navigation">
-                    <a href="#" class="navbar-brand">PPEIMS</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">PPEIMS</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fa fa-reorder"></i>
                     </button>
 
                     <div class="navbar-collapse collapse" id="navbar">
                         <ul class="nav navbar-nav mr-auto">
-                            <li class="active">
+                            @*<li class="active">
                                 <a asp-area="" asp-controller="Home" asp-action="Index" class="simple-text logo-normal">
                                     Home
                                 </a>
+                            </li>*@
+                            <li class="dropdown">
+                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">My Profile</a>
+                                <ul role="menu" class="dropdown-menu">
+                                    <li><a asp-area="" asp-controller="Profile" asp-action="Index">Employee Profile</a></li>
+                                </ul>
                             </li>
                             <li class="dropdown">
                                 <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Data Entry</a>
@@ -100,25 +106,26 @@
 
                                 </ul>
                             </li>
-                            @if (User.Identity.GetRoleName() == "Admin")
-        {
-                            <li class="dropdown">
-                                <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Maintenance</a>
-                                <ul role="menu" class="dropdown-menu">
-                                    <li><a asp-area="" asp-controller="Companies" asp-action="Index">Company</a></li>
-                                    <li><a asp-area="" asp-controller="Departments" asp-action="Index">Department</a></li>
-                                    <li><a asp-area="" asp-controller="Users" asp-action="Index">User </a></li>
-                                    <li><a asp-area="" asp-controller="Items" asp-action="Index">Item </a></li>
-                                    <li><a asp-area="" asp-controller="PPE" asp-action="Index">PPE </a></li>
 
-                                </ul>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-controller="Reports" asp-action="Index" class="simple-text logo-normal">
-                                    Reports
-                                </a>
-                            </li>
-                            } 
+                            @if (User.Identity.GetRoleName() == "Admin")
+                            {
+                                <li class="dropdown">
+                                    <a aria-expanded="false" role="button" href="#" class="dropdown-toggle" data-toggle="dropdown">Maintenance</a>
+                                    <ul role="menu" class="dropdown-menu">
+                                        <li><a asp-area="" asp-controller="Companies" asp-action="Index">Company</a></li>
+                                        <li><a asp-area="" asp-controller="Departments" asp-action="Index">Department</a></li>
+                                        <li><a asp-area="" asp-controller="Users" asp-action="Index">User </a></li>
+                                        <li><a asp-area="" asp-controller="Items" asp-action="Index">Item </a></li>
+                                        <li><a asp-area="" asp-controller="PPE" asp-action="Index">PPE </a></li>
+
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a asp-area="" asp-controller="Reports" asp-action="Index" class="simple-text logo-normal">
+                                        Reports
+                                    </a>
+                                </li>
+                            }
 
                         </ul>
                         <ul class="nav navbar-top-links navbar-right">

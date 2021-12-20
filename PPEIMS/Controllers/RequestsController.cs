@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using DNTBreadCrumb.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PPEIMS.Models;
 using PPEIMS.Models.View_Model;
 
@@ -141,10 +142,11 @@ namespace PPEIMS.Controllers
                 {
                     recCount =
                     _context.Requests
-                        .Where(a=> _compaccess.Contains(a.Departments.CompanyId))
+                        .Where(a => _compaccess.Contains(a.CompanyId))
                         .Where(a => a.Status == "Active")
                         .Where(strFilter)
                         .Count();
+
                 }
                 else if (roleName == "Admin")
                 {
@@ -181,7 +183,7 @@ namespace PPEIMS.Controllers
                 else if (roleName == "Warehouseman")
                 {
                     m = m
-                         .Where(a => _compaccess.Contains(a.Departments.CompanyId))
+                         .Where(a => _compaccess.Contains(a.CompanyId))
                         .Where(a => a.DocumentStatus == docstatus);
                 }
                 else if (roleName == "Admin")
@@ -235,27 +237,79 @@ namespace PPEIMS.Controllers
         }
 
 
-        public IActionResult getEmployees(int RequestId)
+        public IActionResult getEmployees(int RequestId, int itemid)
         {
             string status = "";
 
             int deptId = Convert.ToInt32(User.Identity.GetDepartmentID());
+            DateTime dt = new DateTime(1900, 01, 01);
+
+            //var v =
+
+            //    _context.Users.Where(a => a.Status == "1")
+            //    .Where(a => a.DepartmentId == deptId)
+            //    .Select(a => new
+            //    {
+            //        EmployeeName = a.Name,
+            //        a.Id,
+            //        IsExisting = _context.RequestDetailUsers.Where(b => b.RequestDetailId == RequestId)
+            //                    .Where(b => b.Status == "Active").Where(b => b.UserId == a.Id).Count() == 0 ? 0 : 1
+            //        ,
+            //        IssuedDate = _context.RequestDetailUsers.Where(b=>b.UserId == a.Id).Where
+            //        ,
+            //        Months = a.Category == "OFFICE" ? _context.RequestDetails.Where(b => b.ItemId == itemid).FirstOrDefault().Items.PPEs.Office : _context.RequestDetails.Where(b => b.ItemId == itemid).FirstOrDefault().Items.PPEs.Field
+
+            //    });
 
 
-            var v =
+           
 
-                _context.Users.Where(e => e.Status == "1")
+
+            var v = _context.Users
+                .Where(a => a.Status == "1")
                 .Where(a => a.DepartmentId == deptId)
-                .Select(a => new {
-                    EmployeeName = a.Name,
-                    a.Id,
-                    IsExisting = _context.RequestDetailUsers.Where(b => b.RequestDetailId == RequestId)
-                                .Where(b => b.Status == "Active").Where(b => b.UserId == a.Id).Count() == 0 ? 0 : 1
-                   
-                });
+                     .GroupJoin(
+                         _context.RequestDetailUsers
+                                    
+                                    .Where(b => b.Status == "Active")
+                                    .Where(b => b.DocumentStatus == 1)
+                                    .Where(b => b.RequestDetails.Status == "Active")
+                                    .Where(b => b.RequestDetails.ItemId == itemid)
+                                    .Where(b => b.RequestDetails.Requests.DocumentStatus == "Approved"),
+                        i => i.Id,
+                        p => p.UserId,
+                        (i, g) =>
+                           new
+                           {
+                               i,
+                               g
+                           }
+                     )
+                     .SelectMany(
+                        temp => temp.g.Take(1).DefaultIfEmpty(),
+                        (temp, p) =>
+                           new
+                           {
+                               EmployeeName = temp.i.Name,
+                               temp.i.Id,
+                               IsExisting = _context.RequestDetailUsers
+                                            .Where(b => b.RequestDetailId == RequestId)
+                                           
+                                            .Where(b => b.Status == "Active")
+                                            .Where(b => b.UserId == temp.i.Id).Count() == 0 ? 0 : 1,
+
+                               RequestDetailId = p.RequestDetails.Id.ToString() == null ? 0 : p.RequestDetails.Id,
+                               RequestId = p.RequestDetails.Requests.Id.ToString() == null ? 0 : p.RequestDetails.Requests.Id,
+
+                               IssuedDate = p.RequestDetails.Requests.WarehouseApprovedDate == null ? dt : p.RequestDetails.Requests.WarehouseApprovedDate,
+                               EmployeeType = p.Users.Category,
+                               Months = p.Users.Category == "OFFICE" ? (p.RequestDetails.Items.PPEs.Office.ToString() == null ? 0  : p.RequestDetails.Items.PPEs.Office) : (p.RequestDetails.Items.PPEs.Field.ToString() == null ? 0 : p.RequestDetails.Items.PPEs.Field)
+                           }
+                     );
+
 
             status = "success";
-
+            var x = v.ToList();
 
 
 
@@ -346,10 +400,11 @@ namespace PPEIMS.Controllers
             {
                 if (fvm.Id == 0)
                 {
+                    int userid = User.Identity.GetUserId();
                     string series_code = "REQUEST";
                     series = new NoSeriesController(_context).GetNoSeries(series_code);
                     refno = "RQ" + series;
-
+                    int _compid = _context.Users.Include(a=>a.Departments).Where(a => a.Id == userid).FirstOrDefault().Departments.CompanyId;
                     var req = new Request
                     {
                         ReferenceNo = refno,
@@ -359,6 +414,7 @@ namespace PPEIMS.Controllers
                         DocumentStatus = "Pending",
                         Status = "Active",
                         DepartmentId = Convert.ToInt32(User.Identity.GetDepartmentID())
+                        ,CompanyId = _compid
                     };
 
                   
@@ -543,6 +599,29 @@ namespace PPEIMS.Controllers
                 req.DocumentStatus = newDocumentStatus;
                 _context.Update(req);
                 _context.SaveChanges();
+
+
+                
+                if (newDocumentStatus == "Approved")
+                {
+                    _context.RequestDetailUsers
+                       .Where(a => a.Status == "Active")
+                       .Where(a => a.DocumentStatus == 1)
+                       .ToList()
+                       .ForEach(b => { b.DocumentStatus = 0; });
+                    _context.SaveChanges();
+
+                    _context.RequestDetailUsers
+                      .Where(a => a.Status == "Active")
+                     
+                      .Where(a => a.RequestDetails.RequestId == refid)
+                      .ToList()
+                      .ForEach(b => { b.DocumentStatus = 1; });
+                    _context.SaveChanges();
+                }
+
+
+
 
 
                 status = "success";
@@ -808,6 +887,7 @@ namespace PPEIMS.Controllers
                     {
                         item.Status = "Active";
                         item.CreatedDate = DateTime.Now;
+                        item.DocumentStatus = 0;
                         _context.RequestDetailUsers.Add(item);
                     }
 

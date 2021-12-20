@@ -59,8 +59,8 @@
                                 </select>
 
                             </td>
-                            <td>
-                                @*<input class=" form-control" type="text" placeholder="Office" name="office[]" required />*@
+                            @*<td>
+                               
                                 <select class="form-control input-sm" name="Office[]">
                                     <option value="1">1 Month</option>
                                     <option value="2">2 Months</option>
@@ -81,7 +81,7 @@
                                 </select>
                             </td>
                             <td>
-                                @*<input class=" form-control" type="text" placeholder="Field" name="field[]" required />*@
+                               
                                 <select class="form-control input-sm"  name="Field[]">
                                     <option value="1">1 Month</option>
                                     <option value="2">2 Months</option>
@@ -100,7 +100,7 @@
                                     <option value="48">4 Years</option>
                                     <option value="60">5 Years</option>
                                 </select>
-                            </td>
+                            </td>*@
                             <td>
                                 <button class="remITEM btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i></button>
                             </td>
@@ -110,8 +110,8 @@
                                 <tr>
 
                                     <th width="35%">Item</th>
-                                    <th width="10%">Office</th>
-                                    <th width="15%">Field</th>
+                                    @*<th width="10%">Office</th>
+                                    <th width="15%">Field</th>*@
 
                                     <th width="10%">Actions</th>
                                     <th hidden>Id</th>
@@ -119,7 +119,7 @@
                             </thead>
                             <tbody id="p_Item">
                                 <tr id="trAction">
-                                    <td colspan="3"></td>
+                                    <td ></td>
                                     <td>
                                         <button class="addFE btn btn-default" type="button"><i class="fa fa-plus"></i> </button>
                                     </td>
@@ -164,11 +164,7 @@
         $(document).on('click', '.addFE', function () {
             var i = ($('#p_Item tr').length - 1) + 1;
             var $tr = $('<tr class="trItems">').append($('#ITEMtemplate').html());
-            //if (i==1) {
-            //    FEDiv.prepend($tr);
-            //} else {
-            //    $("#tblItem tbody:last-child").before($tr);
-            //}
+           
            
             $("#trAction").before($tr);
             initiateSelect2()
@@ -222,11 +218,10 @@
 
                 DepartmentId: $("#DetailId").val(),
                 PPEId: $(this).find("td:eq(0)").find("select").val(),
-                Office: $(this).find("td:eq(1)").find("select").val(),
-                Field: $(this).find("td:eq(2)").find("select").val(),
-                Id: $(this).find("td:eq(4)").text(),
-                //QuantityReceived: $(this).find("input").val(),
-                //haveRecord: $haveRecord
+                //Office: $(this).find("td:eq(1)").find("select").val(),
+                //Field: $(this).find("td:eq(2)").find("select").val(),
+                Id: $(this).find("td:eq(2)").text(),
+
             }
             item.push(obj)
         });
@@ -392,47 +387,48 @@
 
                             '<td>' +
                         '<select class="form-control input-sm cmbPPE" id=cmbPPE' + i + ' name="PPEId[]">' +
-                            
+                        '</td>' +
+                        //'<td>' +
+                        //'<select class="form-control input-sm cmbOffice" id=cmbOffice' + i + ' name="Office[]">' +
+                        //            '<option value="1">1 Month</option>' +
+                        //            '<option value="2">2 Months</option>' +
+                        //            '<option value="3">3 Months</option>' +
+                        //            '<option value="4">4 Months</option>' +
+                        //            '<option value="5">5 Months</option>' +
+                        //            '<option value="6">6 Months</option>' +
+                        //            '<option value="7">7 Months</option>' +
+                        //            '<option value="8">8 Months</option>' +
+                        //            '<option value="9">9 Months</option>' +
+                        //            '<option value="10">10 Months</option>' +
+                        //            '<option value="11">11 Months</option>' +
+                        //            '<option value="12">1 Year</option>' +
+                        //            '<option value="24">2 Years</option>' +
+                        //            '<option value="36">3 Years</option>' +
+                        //            '<option value="48">4 Years</option>' +
+                        //            '<option value="60">5 Years</option>' +
+                        //        '</select>' +
+                        //    '</td>' +
+                        //'<td>' +
+                        //    '<select class="form-control input-sm cmbField" id=cmbField' + i + ' name="Field[]">' +
+                        //            '<option value="1">1 Month</option>' +
+                        //            '<option value="2">2 Months</option>' +
+                        //            '<option value="3">3 Months</option>' +
+                        //            '<option value="4">4 Months</option>' +
+                        //            '<option value="5">5 Months</option>' +
+                        //            '<option value="6">6 Months</option>' +
+                        //            '<option value="7">7 Months</option>' +
+                        //            '<option value="8">8 Months</option>' +
+                        //            '<option value="9">9 Months</option>' +
+                        //            '<option value="10">10 Months</option>' +
+                        //            '<option value="11">11 Months</option>' +
+                        //            '<option value="12">1 Year</option>' +
+                        //            '<option value="24">2 Years</option>' +
+                        //            '<option value="36">3 Years</option>' +
+                        //            '<option value="48">4 Years</option>' +
+                        //            '<option value="60">5 Years</option>' +
+                        //        '</select>' +
+                        //'</td>' +
                         '<td>' +
-                        '<select class="form-control input-sm cmbOffice" id=cmbOffice' + i + ' name="Office[]">' +
-                                    '<option value="1">1 Month</option>' +
-                                    '<option value="2">2 Months</option>' +
-                                    '<option value="3">3 Months</option>' +
-                                    '<option value="4">4 Months</option>' +
-                                    '<option value="5">5 Months</option>' +
-                                    '<option value="6">6 Months</option>' +
-                                    '<option value="7">7 Months</option>' +
-                                    '<option value="8">8 Months</option>' +
-                                    '<option value="9">9 Months</option>' +
-                                    '<option value="10">10 Months</option>' +
-                                    '<option value="11">11 Months</option>' +
-                                    '<option value="12">1 Year</option>' +
-                                    '<option value="24">2 Years</option>' +
-                                    '<option value="36">3 Years</option>' +
-                                    '<option value="48">4 Years</option>' +
-                                    '<option value="60">5 Years</option>' +
-                                '</select>' +
-                            '</td>' +
-                        '<td>' +
-                            '<select class="form-control input-sm cmbField" id=cmbField' + i + ' name="Field[]">' +
-                                    '<option value="1">1 Month</option>' +
-                                    '<option value="2">2 Months</option>' +
-                                    '<option value="3">3 Months</option>' +
-                                    '<option value="4">4 Months</option>' +
-                                    '<option value="5">5 Months</option>' +
-                                    '<option value="6">6 Months</option>' +
-                                    '<option value="7">7 Months</option>' +
-                                    '<option value="8">8 Months</option>' +
-                                    '<option value="9">9 Months</option>' +
-                                    '<option value="10">10 Months</option>' +
-                                    '<option value="11">11 Months</option>' +
-                                    '<option value="12">1 Year</option>' +
-                                    '<option value="24">2 Years</option>' +
-                                    '<option value="36">3 Years</option>' +
-                                    '<option value="48">4 Years</option>' +
-                                    '<option value="60">5 Years</option>' +
-                                '</select>' +
-                            '</td><td>' +
                             '<a title="Delete" class="btn btn-danger btn-bitbucket remITEM" href="#"><i class="fa fa-remove"></i></a>' +
                             '</td>' +
                         '<td hidden>' + responsedata.data[i].id + '</td>';
@@ -475,13 +471,13 @@
                         $lastnum++;
 
 
-                        $('#cmbOffice' + i).val(responsedata.data[i].office).trigger('change');
-                        $('#cmbField' + i).val(responsedata.data[i].field).trigger('change');
+                        //$('#cmbOffice' + i).val(responsedata.data[i].office).trigger('change');
+                        //$('#cmbField' + i).val(responsedata.data[i].field).trigger('change');
                     }
 
 
                     $trr =
-                        '<td colspan="3"></td>' 
+                        '<td></td>' 
                     $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>'
                     $trr = $trr + $tdCtr;
                     var $tr = $('<tr id="trAction">').append($trr);
@@ -493,7 +489,7 @@
 
                   
                     $trr =
-                        '<td colspan="3"></td>'
+                        '<td></td>'
                     $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>' +
                         '<td hidden>0</td>';
                     $trr = $trr + $tdCtr;

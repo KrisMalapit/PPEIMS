@@ -6,6 +6,10 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20210813033116_6.cs" />
+    <Compile Remove="Migrations\20211203005059_25.cs" />
+    <Compile Remove="Migrations\20211215061516_35.cs" />
+    <Compile Remove="Migrations\20211216064827_28.cs" />
+    <Compile Remove="Migrations\20211220093142_29.cs" />
   </ItemGroup>
 
   <ItemGroup>

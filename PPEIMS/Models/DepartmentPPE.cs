@@ -18,8 +18,8 @@ namespace PPEIMS.Models
         public virtual Department Departments { get; set; }
         public int PPEId { get; set; }
         public virtual PPE PPEs { get; set; }
-        public int Office { get; set; }
-        public int Field { get; set; }
+        //public int Office { get; set; }
+        //public int Field { get; set; }
         public string Status { get; set; }
       
     }

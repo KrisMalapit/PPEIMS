@@ -66,6 +66,11 @@ namespace PPEIMS.Controllers
         public ActionResult getData()
         {
             string strFilter = "";
+
+            string compaccess = User.Identity.GetCompanyAccess();
+            int[] _compaccess = compaccess.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+
+
             try
             {
                 
@@ -117,6 +122,7 @@ namespace PPEIMS.Controllers
 
                 _context.Items
                  .Where(a => a.Status == "Active")
+                 .Where(a => _compaccess.Contains(a.CompanyId))
                 .Select(a => new
                 {
                     a.No,
@@ -129,7 +135,9 @@ namespace PPEIMS.Controllers
                   ,
                     a.PPEId
                   ,
-                    PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name
+                    PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name,
+                    Company = _context.Companies.Where(b=>b.ID == a.CompanyId).FirstOrDefault().Name
+        
                     //,a.Field
                     //,a.Office
                   
@@ -148,7 +156,7 @@ namespace PPEIMS.Controllers
                 var v =
                _context.Items
               .Where(a => a.Status == "Active")
-             
+             .Where(a => _compaccess.Contains(a.CompanyId))
               .Select(a => new
               {
                   a.No,
@@ -160,7 +168,8 @@ namespace PPEIMS.Controllers
                   a.Id
                   ,
                   a.PPEId
-                  ,PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name
+                  ,PPE = a.PPEId.ToString() == "" ? "" : a.PPEs.Name,
+                  Company = _context.Companies.Where(b => b.ID == a.CompanyId).FirstOrDefault().Name
                   //,a.Field
                   //,a.Office
               }).Where(strFilter)

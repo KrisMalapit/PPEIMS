@@ -31,7 +31,7 @@
                     <label for="Name" class="col-form-label">Name</label>
                     <input type="text" class="form-control" name="Name" id="Name">
                 </div>
-                @*<div class="form-group">
+                <div class="form-group">
                     <label class="col-form-label">Office  (Months)</label>
                    
                         <select class="form-control input-sm" id="ppeOffice" name="Office">
@@ -76,7 +76,7 @@
                             <option value="60">5 Years</option>
                         </select>
                    
-                </div>*@
+                </div>
             </div>
             <div class="modal-footer">
 
@@ -111,8 +111,8 @@
                 <tr>
                     <th style="width:20%">Code</th>
                     <th>Name</th>
-                    @*<th style="width:10%">Office (Months)</th>
-                    <th style="width:10%">Field (Months)</th>*@
+                    <th style="width:10%">Office (Months)</th>
+                    <th style="width:10%">Field (Months)</th>
                     <th style="width:10%">Actions</th>
                 </tr>
             </thead>
@@ -159,8 +159,8 @@
 
     $('#btnSubmit').click(function () {
        
-        //$office = $("#ppeOffice").val();
-        //$field = $("#ppeField").val();
+        $office = $("#ppeOffice").val();
+        $field = $("#ppeField").val();
 
 
          $.ajax({
@@ -171,8 +171,8 @@
                      Id : $('#Id').val(),
                      Code: $('#Code').val(),
                      Name: $('#Name').val()
-                    // , Office: $office
-                    //, Field: $field
+                     , Office: $office
+                    , Field: $field
                 }
                 , success: function (responsedata) {
                     if (responsedata.status == "success") {
@@ -213,20 +213,20 @@
                                         var $id = responsedata.data[i].id;
                                         var $code = responsedata.data[i].code;
                                         var $name = responsedata.data[i].name;
-                                        //var $office = responsedata.data[i].office;
-                                        //var $field = responsedata.data[i].field;
+                                        var $office = responsedata.data[i].office;
+                                        var $field = responsedata.data[i].field;
 
 
                                         $actions =
                                             "<a title='Edit' " +
-                                        " data-id=" + $id + " data-code=" + $code + " data-name='" + $name +
+                                        " data-id=" + $id + " data-code='" + $code + "' data-name='" + $name + "' data-office='" + $office + "' data-field='" + $field +
                                         "' onclick='showmodal(this);'>Edit</a>&nbsp" +
                                             "<a title='Delete' onclick='deleteItemdetail(" + $id + ");'>Delete</a>";
                                             //'<a  onclick="deleteItemdetail(' + $id + ');"><i class="menu-icon mdi mdi-delete"></i></a>';
                                               data.push([$code
                                             , $name
-                                            //, $office
-                                            //, $field
+                                            , $office
+                                            , $field
                                             ,$actions]);
 
                                     }
@@ -254,9 +254,9 @@
         $id = $(obj).attr('data-id');
         $code = $(obj).attr('data-code');
         $name = $(obj).attr('data-name');
-        //$ppe = $(obj).attr('data-ppe');
-        //$office = $(obj).attr('data-office');
-        //$field = $(obj).attr('data-field');
+        $ppe = $(obj).attr('data-ppe');
+        $office = $(obj).attr('data-office');
+        $field = $(obj).attr('data-field');
         //$desc2 = $(obj).attr('data-desc2') == "null" ? "" : $(obj).attr('data-desc2');
         //$descliq = $(obj).attr('data-descliq') == "null" ? "" : $(obj).attr('data-descliq');
         //$type = $(obj).attr('data-type') == "null" ? "" : $(obj).attr('data-type');
@@ -265,8 +265,8 @@
         $("#Id").val($id);
         $("#Code").val($code);
         $("#Name").val($name);
-        //$("#ppeOffice").val($office);
-        //$("#ppeField").val($field);
+        $("#ppeOffice").val($office);
+        $("#ppeField").val($field);
         //$("#itemDescription").val($desc);
         //$("#itemDescription2").val($desc2);
         //$("#itemDescription").val($desc);

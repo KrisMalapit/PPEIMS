@@ -356,8 +356,8 @@ namespace PPEIMS.Controllers
               {
                   a.PPEId,
                   PPEName = a.PPEs.Name,
-                  a.Field,
-                  a.Office,
+                  //a.Field,
+                  //a.Office,
                   a.DepartmentId,
                   a.Id
 

@@ -191,7 +191,7 @@ namespace PPEIMS.Controllers
                     new Claim("FullName", user.Name),
                     new Claim("CompanyAccess", user.CompanyAccess),
                     new Claim("DepartmentID", user.DepartmentId.ToString()),
-                   
+                   new Claim("DepartmentName", user.Departments.Name.ToString()),
                 };
 
             var principal = new ClaimsPrincipal();

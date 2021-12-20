@@ -10,8 +10,8 @@ using PPEIMS.Models;
 namespace PPEIMS.Migrations
 {
     [DbContext(typeof(PPEIMSContext))]
-    [Migration("20211203005059_25")]
-    partial class _25
+    [Migration("20211220093958_28")]
+    partial class _28
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -84,10 +84,6 @@ namespace PPEIMS.Migrations
 
                     b.Property<int>("DepartmentId");
 
-                    b.Property<int>("Field");
-
-                    b.Property<int>("Office");
-
                     b.Property<int>("PPEId");
 
                     b.Property<string>("Status");
@@ -106,6 +102,8 @@ namespace PPEIMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CompanyId");
 
                     b.Property<string>("Description")
                         .IsRequired();
@@ -202,8 +200,12 @@ namespace PPEIMS.Migrations
                         .IsRequired()
                         .HasMaxLength(20);
 
+                    b.Property<int>("Field");
+
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int>("Office");
 
                     b.Property<string>("Status");
 
@@ -217,6 +219,8 @@ namespace PPEIMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CompanyId");
 
                     b.Property<string>("CreatedBy");
 
@@ -247,8 +251,6 @@ namespace PPEIMS.Migrations
                     b.Property<int>("WarehousemanId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Requests");
                 });
@@ -293,6 +295,8 @@ namespace PPEIMS.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedDate");
+
+                    b.Property<int>("DocumentStatus");
 
                     b.Property<int>("RequestDetailId");
 
@@ -414,14 +418,6 @@ namespace PPEIMS.Migrations
                     b.HasOne("PPEIMS.Models.Item", "Items")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PPEIMS.Models.Request", b =>
-                {
-                    b.HasOne("PPEIMS.Models.Department", "Departments")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
