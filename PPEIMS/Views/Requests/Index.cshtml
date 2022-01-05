@@ -65,6 +65,8 @@
                 <input id="SubDetailId" type="hidden" />
                 <input id="TotalQty" type="hidden" />
                 <h3 id="itemName"></h3>
+                <input id="ReqType" type="hidden" />
+
                 <br />
                 <div class="form-group ">
                     <form id="frm">
@@ -754,22 +756,50 @@ $(document).ready(function () {
         var arr = [];
         $rowSelected = 0;
         var strUser = '';
-                table = $('#tblEmployee').DataTable();
-                table.$('input[type="checkbox"]').each(function () {
-                    if (this.checked) {
-                        if (strUser != '') {
-                            strUser += ",";
+        $cntUnExpired = 0;
+        table = $('#tblEmployee').DataTable();
+        table.$('input[type="checkbox"]').each(function () {
+            if (this.checked) {
+                if (strUser != '') {
+                    strUser += ",";
+                }
+
+                if ($("#ReqType").val() == "New") {
+                    $expirationDate = $(this).closest('tr').find("td:eq(5)").text()
+                    if ($expirationDate) {
+                        var dt = new Date($expirationDate);
+                        console.log(dt);
+                        if (dt > new Date()) {
+                            $cntUnExpired++;
                         }
-
-
-                        $itemid = $(this).closest('tr').find("td:eq(2)").text()
-                        arr.push({ RequestDetailId: $("#SubDetailId").val(), UserId: $itemid });
-                        strUser += $itemid;
-
-                        $rowSelected += 1;
                     }
-                })
+                }
+               
+                
+                
 
+
+
+                $itemid = $(this).closest('tr').find("td:eq(2)").text()
+                arr.push({ RequestDetailId: $("#SubDetailId").val(), UserId: $itemid });
+                strUser += $itemid;
+
+                $rowSelected += 1;
+            }
+        })
+
+        if ($cntUnExpired > 0) {
+            toastr.options = {
+                "closeButton": true,
+                "showDuration": 0,
+            }
+
+            toastr["error"]("Some of the employees is not due for new issuance");
+            
+            return false;
+        } 
+       
+       
         if ($("#TotalQty").val() != $rowSelected ) {
             toastr["error"]("Selected rows is not equal to quantity set")
             toastr.options = {
@@ -1091,7 +1121,7 @@ $(document).ready(function () {
         if ($('#tblItem tr').length > 2) {
             $('#p_Item > tr').remove();
             $trr =
-                '<td colspan="4"></td>'
+                '<td colspan="5"></td>'
 
 
             $tdCtr = '<td><button class="addFE btn btn-default" type = "button"><i class="fa fa-plus"></i></button></td>'
@@ -1174,7 +1204,11 @@ $(document).ready(function () {
         //alert($comment);
     }
     function showmodaldetail(obj) {
+
         console.log(obj);
+        //console.log($(obj).closest('tr').find('.cmbType').val());
+
+
         $id = $(obj).attr('data-id');
         $itemid = $(obj).attr('data-item');
         $('#SubDetailId').val($id);
@@ -1184,8 +1218,13 @@ $(document).ready(function () {
         $totalqty = $(obj).closest('tr').find('input').val();
         loadEmployees($id, $itemid);
         $('#TotalQty').val($totalqty);
+
         $('#itemName').html("Item Name : " + $(obj).attr('data-itemname'));
+        $('#ReqType').val($(obj).closest('tr').find('.cmbType').val());
         
+
+
+
         $('#modalEmployee').modal('show');
 
 
@@ -1528,17 +1567,22 @@ $(document).ready(function () {
                             , success: function (responsedata) {
                                 console.log(responsedata);
                                 if (responsedata.status == "success") {
-
+                                    
                                     for (var i = 0; i < responsedata.data.length; i++) {
 
                                         var $id = responsedata.data[i].id;
-
                                         $issuedDate = moment(responsedata.data[i].issuedDate).format("MM/DD/YYYY") == "01/01/1900" ? "" : moment(responsedata.data[i].issuedDate).format("MM/DD/YYYY");
                                         $expirationDate = ""
+
                                         if ($issuedDate!= "") {
                                             var dt = new Date(responsedata.data[i].issuedDate);
                                             dt.setMonth(dt.getMonth() + responsedata.data[i].months);
-                                            $expirationDate =  moment(dt).format("MM/DD/YYYY")
+                                            $expirationDate = moment(dt).format("MM/DD/YYYY")
+
+
+
+
+
                                         } 
 
                                         $actions =
@@ -1559,7 +1603,7 @@ $(document).ready(function () {
 
                                     }
 
-
+                                    
                                     if ($.fn.DataTable.isDataTable('#tblEmployee')) {
                                         $('#tblEmployee').DataTable().destroy();
 

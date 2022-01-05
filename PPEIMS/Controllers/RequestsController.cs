@@ -161,7 +161,7 @@ namespace PPEIMS.Controllers
                 {
                     recCount =
                     _context.Requests
-                        .Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()))
+                        //.Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()))
                         .Where(a => a.DocumentStatus == docstatus)
                         .Where(a => a.Status == "Active")
                         .Where(strFilter)
@@ -192,8 +192,8 @@ namespace PPEIMS.Controllers
                 }
                 else
                 {
-                    m = m.Where(a => a.DocumentStatus == docstatus)
-                        .Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()));
+                    m = m.Where(a => a.DocumentStatus == docstatus);
+                        //.Where(a => a.DepartmentId == Convert.ToInt32(User.Identity.GetDepartmentID()));
                 }
 
                 var v =
