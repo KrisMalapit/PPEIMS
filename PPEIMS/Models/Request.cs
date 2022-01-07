@@ -27,7 +27,8 @@ namespace PPEIMS.Models
         public DateTime WarehouseApprovedDate { get; set; }
         public int DepartmentId { get; set; }
         public int CompanyId { get; set; }
-                                           //public virtual Department Departments { get; set;     }
+        public DateTime ApprovedDate { get; set; }
+        //public virtual Department Departments { get; set;     }
 
     }
 }

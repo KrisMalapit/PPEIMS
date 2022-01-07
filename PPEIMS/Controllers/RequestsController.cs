@@ -32,7 +32,7 @@ namespace PPEIMS.Controllers
                 || a.No.ToUpper().Contains(q.ToUpper())).Select(b => new
                 {
                     id = b.Id,
-                    text = b.No + " | " + b.Description,
+                    text = b.No + " | " + b.Description + " | " + b.PPEs.Name,
 
                 });
 
@@ -294,7 +294,7 @@ namespace PPEIMS.Controllers
                                temp.i.Id,
                                IsExisting = _context.RequestDetailUsers
                                             .Where(b => b.RequestDetailId == RequestId)
-                                           
+                                            .Where(b => b.DocumentStatus == 1)
                                             .Where(b => b.Status == "Active")
                                             .Where(b => b.UserId == temp.i.Id).Count() == 0 ? 0 : 1,
 
@@ -570,31 +570,47 @@ namespace PPEIMS.Controllers
                 var req = _context.Requests.Find(refid);
                 string currentDocumentStatus = req.DocumentStatus;
                 string newDocumentStatus = "";
-                
-                switch (currentDocumentStatus)
-                { 
-                    case "Pending":
-                    case "Return to Requestor":
-                        newDocumentStatus = "For Approval Dept Head";
-                        req.DateSubmitted = DateTime.Now;
-                       
+
+
+                var roleName = User.Identity.GetRoleName();
+                switch (roleName)
+                {
+                   
+                    case "User":
+                        switch (currentDocumentStatus)
+                        {
+                            case "Pending":
+                            case "Return to Requestor":
+                                newDocumentStatus = "For Approval Dept Head";
+                                req.DateSubmitted = DateTime.Now;
+                                break;
+                        }
+
+                        newDocumentStatus = currentDocumentStatus;
+
                         break;
-                    case "For Approval Dept Head":
+                    case "Dept Head":
                         newDocumentStatus = "For Approval Safety Head";
                         req.DepartmentApprovedDate = DateTime.Now;
                         req.DepartmentHeadId = User.Identity.GetUserId();
                         break;
-                    case "For Approval Safety Head":
+                    case "Safety":
                         newDocumentStatus = "For Approval Warehouseman";
                         req.SafetyApprovedDate = DateTime.Now;
                         req.SafetyId = User.Identity.GetUserId();
                         break;
-                    case "For Approval Warehouseman":
+                    case "Warehouseman":
                         newDocumentStatus = "Approved";
                         req.WarehouseApprovedDate = DateTime.Now;
+                        req.ApprovedDate = DateTime.Now.Date;
                         req.WarehousemanId = User.Identity.GetUserId();
                         break;
+
                 }
+
+
+
+               
 
                 req.DocumentStatus = newDocumentStatus;
                 _context.Update(req);
@@ -602,23 +618,23 @@ namespace PPEIMS.Controllers
 
 
                 
-                if (newDocumentStatus == "Approved")
-                {
-                    _context.RequestDetailUsers
-                       .Where(a => a.Status == "Active")
-                       .Where(a => a.DocumentStatus == 1)
-                       .ToList()
-                       .ForEach(b => { b.DocumentStatus = 0; });
-                    _context.SaveChanges();
+                //if (newDocumentStatus == "Approved")
+                //{
+                //    _context.RequestDetailUsers
+                //       .Where(a => a.Status == "Active")
+                //       .Where(a => a.DocumentStatus == 1)
+                //       .ToList()
+                //       .ForEach(b => { b.DocumentStatus = 0; });
+                //    _context.SaveChanges();
 
-                    _context.RequestDetailUsers
-                      .Where(a => a.Status == "Active")
+                //    _context.RequestDetailUsers
+                //      .Where(a => a.Status == "Active")
                      
-                      .Where(a => a.RequestDetails.RequestId == refid)
-                      .ToList()
-                      .ForEach(b => { b.DocumentStatus = 1; });
-                    _context.SaveChanges();
-                }
+                //      .Where(a => a.RequestDetails.RequestId == refid)
+                //      .ToList()
+                //      .ForEach(b => { b.DocumentStatus = 1; });
+                //    _context.SaveChanges();
+                //}
 
 
 
@@ -743,7 +759,7 @@ namespace PPEIMS.Controllers
               .Select(a => new
               {
                   ItemId = a.Items.Id,
-                  ItemName = a.Items.No + " | " + a.Items.Description,
+                  ItemName = a.Items.No + " | " + a.Items.Description + " | " + a.Items.PPEs.Name,
                   a.Quantity,
                   a.Remarks,
                   a.Type,
@@ -887,7 +903,7 @@ namespace PPEIMS.Controllers
                     {
                         item.Status = "Active";
                         item.CreatedDate = DateTime.Now;
-                        item.DocumentStatus = 0;
+                        item.DocumentStatus = 1;
                         _context.RequestDetailUsers.Add(item);
                     }
 
